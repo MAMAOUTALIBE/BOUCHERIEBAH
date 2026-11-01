@@ -80,7 +80,7 @@ class PaymentView(ProtectedView):
                     order.transition('cancelled')
                     return Response({'detail':'Cette commande a expiré avant son paiement. Votre panier est conservé : validez une nouvelle commande.'},status=409)
                 bucket,expires_at = checkout_expiry()
-                checkout = stripe.checkout.Session.create(mode='payment',payment_method_types=['card'],line_items=[{'price_data':{'currency':'eur','product_data':{'name':f'Commande STC {order.id}'},'unit_amount':cents(order.total)},'quantity':1}],client_reference_id=order.id,metadata={'order_id':order.id},payment_intent_data={'metadata':{'order_id':order.id}},expires_at=expires_at,success_url=f'{settings.FRONTEND_URL}/?order={order.id}&payment=return',cancel_url=f'{settings.FRONTEND_URL}/?order={order.id}&payment=cancelled',idempotency_key=f'stc-checkout-{order.id}-{bucket}')
+                checkout = stripe.checkout.Session.create(mode='payment',payment_method_types=['card'],line_items=[{'price_data':{'currency':'eur','product_data':{'name':f'Commande Beefy {order.id}'},'unit_amount':cents(order.total)},'quantity':1}],client_reference_id=order.id,metadata={'order_id':order.id},payment_intent_data={'metadata':{'order_id':order.id}},expires_at=expires_at,success_url=f'{settings.FRONTEND_URL}/?order={order.id}&payment=return',cancel_url=f'{settings.FRONTEND_URL}/?order={order.id}&payment=cancelled',idempotency_key=f'stc-checkout-{order.id}-{bucket}')
                 payment.session_id = checkout['id']
                 payment.checkout_url = checkout['url']
                 payment.save(update_fields=['session_id','checkout_url'])

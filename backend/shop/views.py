@@ -22,7 +22,7 @@ from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
-from .models import Product, Address, Favorite, Order
+from .models import Product, Address, Favorite, Order, Restaurant
 from .serializers import AddressSerializer, RegisterSerializer, ProfileSerializer, LoginSerializer, ResetSerializer, ResetConfirmSerializer, OrderInputSerializer, DeleteAccountSerializer
 from .services import restaurant_data, categories_data, product_data, order_data, authorized_order, create_order
 from .account_links import password_reset_available, password_reset_link
@@ -42,13 +42,13 @@ def csrf_failure(request,reason=''):
                 'login': ('crm:login', 'Revenir à la connexion'),
                 'product_add': ('crm:product_add', 'Actualiser le formulaire'),
                 'product_edit': ('crm:product_edit', 'Actualiser le formulaire'),
-                'product_availability': ('crm:menu', 'Revenir à ma carte'),
+                'product_availability': ('crm:menu', 'Revenir à mon catalogue'),
                 'order_status': ('crm:orders', 'Revenir aux commandes'),
                 'order_collect': ('crm:orders', 'Revenir aux commandes'),
                 'order_refund': ('crm:orders', 'Revenir aux commandes'),
                 'restaurant': ('crm:restaurant', 'Actualiser le formulaire'),
-                'closure_add': ('crm:restaurant', 'Revenir à mon restaurant'),
-                'closure_delete': ('crm:restaurant', 'Revenir à mon restaurant'),
+                'closure_add': ('crm:restaurant', 'Revenir à ma boucherie'),
+                'closure_delete': ('crm:restaurant', 'Revenir à ma boucherie'),
             }
             destination, label = recovery.get(match.url_name, (destination, label))
             if destination == 'crm:product_edit':
@@ -178,7 +178,9 @@ class ResetView(AuthView):
             token = default_token_generator.make_token(user)
             try:
                 url = password_reset_link(uid, token)
-                send_mail('STC — Réinitialiser votre mot de passe',f'Bonjour,\n\nPour choisir un nouveau mot de passe, ouvrez ce lien valable une heure :\n{url}\n\nSi vous n’êtes pas à l’origine de cette demande, ignorez cet e-mail.\n\nSTC',settings.DEFAULT_FROM_EMAIL,[user.email],fail_silently=False)
+                restaurant = Restaurant.objects.filter(pk=1).first()
+                name = restaurant.name if restaurant else 'Beefy'
+                send_mail(f'{name} — Réinitialiser votre mot de passe',f'Bonjour,\n\nPour choisir un nouveau mot de passe, ouvrez ce lien valable une heure :\n{url}\n\nSi vous n’êtes pas à l’origine de cette demande, ignorez cet e-mail.\n\n{name}',settings.DEFAULT_FROM_EMAIL,[user.email],fail_silently=False)
             except Exception:
                 # Keep the public response identical, but let the team see SMTP failures.
                 logger.exception('Échec de l’envoi de l’e-mail de réinitialisation.')
@@ -220,9 +222,9 @@ class DeleteAccountView(AuthView):
         except ProtectedError:
             # Former staff can still be protected actors in the financial register.
             # Handle refusal after the transaction has rolled back every related change.
-            raise ValidationError('Ce compte ne peut pas être supprimé. Contactez le restaurant.')
+            raise ValidationError('Ce compte ne peut pas être supprimé. Contactez la boucherie.')
         logout(request)
-        return Response({'detail':'Votre compte a été supprimé. Les commandes déjà passées restent enregistrées par le restaurant.'})
+        return Response({'detail':'Votre compte a été supprimé. Les commandes déjà passées restent enregistrées par la boucherie.'})
 
 class AddressesView(ProtectedView):
     permission_classes = [permissions.IsAuthenticated]

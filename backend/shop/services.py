@@ -120,7 +120,7 @@ def _create_order(request,data,key):
         return existing, False
     restaurant = restaurant_instance()
     if not restaurant.ordering_enabled or (not settings.DEMO_MODE and not restaurant.is_open()):
-        raise ValidationError('Le restaurant n’accepte pas de commandes actuellement.')
+        raise ValidationError('La boucherie n’accepte pas de commandes actuellement.')
     # Without a configured zone, delivery is closed rather than accepted everywhere.
     if (data['mode'] == 'Livraison' and (not restaurant.delivery_enabled or not restaurant.delivery_postal_codes)) or (data['mode'] == 'À emporter' and not restaurant.pickup_enabled):
         raise ValidationError('Ce mode de commande n’est pas disponible.')

@@ -93,7 +93,7 @@ class OnSiteTests(TestCase):
         stripe.assert_not_called()
         self.assertEqual(len(mail.outbox),2)
         for message in mail.outbox:
-            self.assertIn('À régler au restaurant', message.body)
+            self.assertIn('À régler à la boucherie', message.body)
             self.assertNotIn('Paiement confirmé', message.body)
             self.assertNotIn('Stripe', message.body)
             self.assertNotIn('démonstration', message.body)
@@ -316,7 +316,7 @@ class OnSiteTests(TestCase):
     def test_crm_labels_financial_events_and_reader_visibility(self):
         order=self.order(status='ready')
         page=self.crm().get(reverse('crm:orders'))
-        self.assertContains(page,'À régler au restaurant')
+        self.assertContains(page,'À régler à la boucherie')
         self.assertContains(page,'Enregistrer l’encaissement')
         self.assertContains(page,'avant de terminer')
         reader=self.crm(self.reader).get(reverse('crm:orders'))

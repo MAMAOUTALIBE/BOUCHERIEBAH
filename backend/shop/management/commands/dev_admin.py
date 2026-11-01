@@ -17,7 +17,7 @@ class Command(BaseCommand):
             self.stdout.write('Administrateur local déjà présent ; mot de passe conservé.')
             return
         password=secrets.token_urlsafe(24)
-        User.objects.create_superuser(email=email,password=password,first_name='Équipe STC')
+        User.objects.create_superuser(email=email,password=password,first_name='Équipe Beefy')
         target.write_text(f'Administration locale : http://localhost:8000/admin/\nE-mail : {email}\nMot de passe : {password}\n')
         target.chmod(0o600)
         self.stdout.write(f'Administrateur créé. Accès disponibles dans {target} (fichier privé).')

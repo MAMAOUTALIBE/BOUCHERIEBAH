@@ -29,6 +29,6 @@ def exception_handler(exc, context):
             if found:
                 field, message = found
                 label = FIELD_LABELS.get(field, field)
-                detail = f'{label} : {message}' if label else str(message)
+                detail = f'{label} : {message}' if label and not str(message).lower().startswith(str(label).lower()) else str(message)
             response.data = {'detail': detail, 'errors': response.data}
     return response

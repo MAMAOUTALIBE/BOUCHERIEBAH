@@ -1,4 +1,4 @@
-"""Short, server-validated forms for the restaurant management interface."""
+"""Short, server-validated forms for the boucherie management interface."""
 import hashlib
 import hmac
 import io
@@ -12,6 +12,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core import signing
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
+from django.db.models import Q
 from django.forms import BaseInlineFormSet, inlineformset_factory
 from PIL import Image, ImageOps, UnidentifiedImageError
 
@@ -28,6 +29,15 @@ MAX_PHOTO_BYTES = 5 * 1024 * 1024
 MAX_PHOTO_SIDE = 6000
 MAX_PHOTO_PIXELS = 20_000_000
 REVISION_AGE = 12 * 60 * 60
+
+
+def catalogue_categories():
+    # Categories and choices kept only for archived items stay out of the manager's lists.
+    return Category.objects.filter(Q(products__archived=False) | Q(products__isnull=True)).distinct()
+
+
+def catalogue_option_groups():
+    return OptionGroup.objects.filter(Q(product__archived=False) | Q(product__isnull=True)).distinct()
 
 
 def has_crm_access(user):
@@ -126,11 +136,11 @@ class ProductForm(AliasedModelErrorsMixin, forms.ModelForm):
     class Meta:
         model = Product
         fields = ('name', 'category', 'price', 'description', 'photo', 'available',
-                  'summary', 'badge', 'vegetarian', 'option_groups')
+                  'summary', 'badge', 'option_groups')
         labels = {
             'name': 'Nom du produit', 'category': 'Catégorie', 'description': 'Description',
             'available': 'Disponible à la commande', 'summary': 'Description courte',
-            'badge': 'Petit badge', 'vegetarian': 'Végétarien', 'option_groups': 'Choix proposés au client',
+            'badge': 'Petit badge', 'option_groups': 'Choix proposés au client',
         }
         widgets = {'description': forms.Textarea(attrs={'rows': 3}),
                    'summary': forms.TextInput(attrs={'placeholder': 'Une courte phrase suffit'}),
@@ -138,8 +148,8 @@ class ProductForm(AliasedModelErrorsMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['category'].queryset = Category.objects.all()
-        self.fields['option_groups'].queryset = OptionGroup.objects.all()
+        self.fields['category'].queryset = catalogue_categories()
+        self.fields['option_groups'].queryset = catalogue_option_groups()
         self._original_fingerprint = product_fingerprint(self.instance) if self.instance.pk else None
         if self.instance.pk and not self.is_bound:
             self.initial['allergens_text'] = ', '.join(self.instance.allergens or [])

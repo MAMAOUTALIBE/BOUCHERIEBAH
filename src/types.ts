@@ -42,4 +42,4 @@ export interface OrderPayload {
 export const euro=(n:number)=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(n);
 export const cents=(n:number)=>Math.round(n*100);
 export const money=(n:number)=>Math.round(n*100)/100;
-export const statusLabels:Record<OrderStatus,string>={pending_payment:'En attente de paiement',confirmed:'Confirmée',preparing:'En cuisine',ready:'Prête à déguster',completed:'Terminée',cancelled:'Annulée'};
+export const statusLabels:Record<OrderStatus,string>={pending_payment:'En attente de paiement',confirmed:'Confirmée',preparing:'En préparation',ready:'Prête',completed:'Terminée',cancelled:'Annulée'};

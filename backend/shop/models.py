@@ -11,7 +11,7 @@ from django.utils import timezone
 
 
 def order_reference():
-    return 'STC-' + uuid.uuid4().hex[:12].upper()
+    return 'BEEFY-' + uuid.uuid4().hex[:12].upper()
 
 def guest_token():
     return secrets.token_urlsafe(32)
@@ -39,6 +39,8 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
     objects = UserManager()
     class Meta:
+        verbose_name = 'client ou membre de l’équipe'
+        verbose_name_plural = 'clients et équipe'
         permissions = [('view_customer', 'Consulter les clients')]
         constraints = [models.UniqueConstraint(Lower('email'),name='unique_user_email_ci')]
     def clean(self):
@@ -63,9 +65,12 @@ class Restaurant(models.Model):
     delivery_enabled = models.BooleanField(default=True)
     pickup_delay = models.CharField('délai de retrait affiché', max_length=30, default='15–20 min')
     delivery_delay = models.CharField('délai de livraison affiché', max_length=30, default='30–40 min')
+    class Meta:
+        verbose_name = 'boucherie'
+        verbose_name_plural = 'boucherie'
     def clean(self):
         if self.pk != 1 and Restaurant.objects.exclude(pk=self.pk).exists():
-            raise ValidationError('Un seul restaurant peut être configuré.')
+            raise ValidationError('Une seule boucherie peut être configurée.')
         if not isinstance(self.delivery_postal_codes, list) or any(not isinstance(x, str) or len(x) != 5 or not x.isdigit() for x in self.delivery_postal_codes):
             raise ValidationError('Les codes postaux doivent être une liste de chaînes à cinq chiffres.')
         if self.delivery_enabled and not self.delivery_postal_codes:
@@ -95,6 +100,8 @@ class OpeningHour(models.Model):
     opens = models.TimeField()
     closes = models.TimeField()
     class Meta:
+        verbose_name = 'créneau horaire'
+        verbose_name_plural = 'créneaux horaires'
         ordering = ['weekday', 'opens']
     def clean(self):
         if self.opens == self.closes:
@@ -107,6 +114,8 @@ class Closure(models.Model):
     date = models.DateField()
     reason = models.CharField(max_length=200, blank=True)
     class Meta:
+        verbose_name = 'fermeture exceptionnelle'
+        verbose_name_plural = 'fermetures exceptionnelles'
         constraints = [models.UniqueConstraint(fields=['restaurant','date'], name='unique_restaurant_closure')]
     def __str__(self):
         return str(self.date)
@@ -116,7 +125,8 @@ class Category(models.Model):
     position = models.PositiveSmallIntegerField(default=0)
     class Meta:
         ordering = ['position','id']
-        verbose_name_plural = 'Catégories'
+        verbose_name = 'catégorie'
+        verbose_name_plural = 'catégories'
     def __str__(self):
         return self.name
 
@@ -126,6 +136,8 @@ class OptionGroup(models.Model):
     minimum = models.PositiveSmallIntegerField(default=0)
     maximum = models.PositiveSmallIntegerField(default=1)
     class Meta:
+        verbose_name = 'groupe d’options'
+        verbose_name_plural = 'groupes d’options'
         ordering = ['-minimum','id']
     def clean(self):
         if self.minimum > self.maximum:
@@ -140,6 +152,8 @@ class Choice(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0, validators=[MinValueValidator(0)])
     available = models.BooleanField(default=True)
     class Meta:
+        verbose_name = 'choix'
+        verbose_name_plural = 'choix'
         ordering = ['id']
     def __str__(self):
         return f'{self.group}: {self.name}'
@@ -150,7 +164,7 @@ class Product(models.Model):
     description = models.TextField()
     summary = models.CharField(max_length=200, blank=True)
     price = models.DecimalField(max_digits=7, decimal_places=2, validators=[MinValueValidator(0)])
-    image = models.CharField(max_length=300, default='burger')
+    image = models.CharField(max_length=300, default='beefy-placeholder')
     photo = models.ImageField(upload_to='products/', blank=True)
     badge = models.CharField(max_length=40, blank=True)
     # Display only verified ratings; leave blank to hide the star.
@@ -167,6 +181,8 @@ class Product(models.Model):
     promotion_ends = models.DateTimeField(null=True, blank=True)
     position = models.PositiveSmallIntegerField(default=0)
     class Meta:
+        verbose_name = 'produit'
+        verbose_name_plural = 'produits'
         ordering = ['position','id']
     def clean(self):
         if self.promotion_source_id == self.pk and self.pk:
@@ -196,6 +212,9 @@ class Address(models.Model):
     address = models.CharField(max_length=200)
     postal = models.CharField(max_length=5)
     city = models.CharField(max_length=100)
+    class Meta:
+        verbose_name = 'adresse'
+        verbose_name_plural = 'adresses'
     def __str__(self):
         return f'{self.label} — {self.user_id}'
 
@@ -203,6 +222,8 @@ class Favorite(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     class Meta:
+        verbose_name = 'favori'
+        verbose_name_plural = 'favoris'
         constraints = [models.UniqueConstraint(fields=['user','product'],name='unique_favorite')]
 
 class OrderQuerySet(models.QuerySet):
@@ -224,7 +245,7 @@ class OrderQuerySet(models.QuerySet):
 
 
 class Order(models.Model):
-    STATUS = [('pending_payment','En attente de paiement'),('confirmed','Confirmée'),('preparing','En cuisine'),('ready','Prête'),('completed','Terminée'),('cancelled','Annulée')]
+    STATUS = [('pending_payment','En attente de paiement'),('confirmed','Confirmée'),('preparing','En préparation'),('ready','Prête'),('completed','Terminée'),('cancelled','Annulée')]
     PAYMENT = [('simulated','Simulé'),('pending','En attente'),('due','À régler sur place'),('paid','Payé'),('failed','Échoué'),('cancelled','Annulé'),('refunded','Remboursé')]
     PAYMENT_METHODS = [('simulation','Simulation'),('stripe','Stripe test'),('on_site','Sur place')]
     objects = OrderQuerySet.as_manager()
@@ -245,6 +266,8 @@ class Order(models.Model):
     total = models.DecimalField(max_digits=9,decimal_places=2)
     customer = models.JSONField()
     class Meta:
+        verbose_name = 'commande'
+        verbose_name_plural = 'commandes'
         ordering = ['-date']
         permissions = [('record_onsite_payment', 'Peut enregistrer les règlements et remboursements sur place')]
         constraints = [models.UniqueConstraint(fields=['scope','idempotency_key'],name='unique_order_idempotency')]
@@ -272,7 +295,7 @@ class Order(models.Model):
     def payment_label(self):
         if self.payment_method == 'on_site':
             if self.payment_status == 'due':
-                return 'À régler à la livraison' if self.mode == 'Livraison' else 'À régler au restaurant'
+                return 'À régler à la livraison' if self.mode == 'Livraison' else 'À régler à la boucherie'
             if self.payment_status == 'paid':
                 return 'Réglé sur place'
             if self.payment_status == 'refunded':
@@ -303,12 +326,17 @@ class OrderLine(models.Model):
     unit_price = models.DecimalField(max_digits=8,decimal_places=2)
     total = models.DecimalField(max_digits=9,decimal_places=2)
     choices = models.JSONField(default=list)
+    class Meta:
+        verbose_name = 'ligne de commande'
+        verbose_name_plural = 'lignes de commande'
 
 class OrderHistory(models.Model):
     order = models.ForeignKey(Order,related_name='history',on_delete=models.CASCADE)
     status = models.CharField(max_length=20,choices=Order.STATUS)
     date = models.DateTimeField(auto_now_add=True)
     class Meta:
+        verbose_name = 'étape de suivi'
+        verbose_name_plural = 'étapes de suivi'
         ordering = ['date','id']
 
 class Payment(models.Model):
@@ -317,6 +345,9 @@ class Payment(models.Model):
     payment_intent = models.CharField(max_length=255,blank=True)
     checkout_url = models.URLField(max_length=2000,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        verbose_name = 'paiement en ligne'
+        verbose_name_plural = 'paiements en ligne'
 
 
 class OnSitePaymentEventQuerySet(models.QuerySet):
@@ -343,6 +374,8 @@ class OnSitePaymentEvent(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        verbose_name = 'règlement sur place'
+        verbose_name_plural = 'règlements sur place'
         ordering = ['created_at', 'id']
         constraints = [models.UniqueConstraint(fields=['order', 'kind'], name='unique_onsite_payment_kind'),
                        models.CheckConstraint(condition=models.Q(amount__gte=0), name='onsite_payment_nonnegative')]
@@ -363,6 +396,9 @@ class StripeEvent(models.Model):
     id = models.CharField(primary_key=True,max_length=255)
     event_type = models.CharField(max_length=120)
     date = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        verbose_name = 'événement Stripe'
+        verbose_name_plural = 'événements Stripe'
 
 class AdminLoginAttempt(models.Model):
     """Shared worker-safe login counter; only a keyed hash of the IP is stored."""

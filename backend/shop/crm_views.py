@@ -23,10 +23,10 @@ from django.views.decorators.http import require_GET, require_POST, require_http
 
 from .crm_forms import (
     AvailabilityForm, ClosureForm, OpeningFormSet, OrderStatusForm, OnSitePaymentForm, ProductForm,
-    RestaurantForm, StaffLoginForm, has_crm_access, product_fingerprint,
+    RestaurantForm, StaffLoginForm, catalogue_categories, has_crm_access, product_fingerprint,
     product_revision, revision_matches,
 )
-from .models import Category, Closure, Order, Product, Restaurant, User
+from .models import Closure, Order, Product, Restaurant, User
 from .payments import release_checkout
 from .onsite_payments import record_payment
 from .services import product_data
@@ -121,7 +121,7 @@ def _image_url(product):
         return product.photo.url
     if product.image.startswith(('https://', 'http://', '/')):
         return product.image
-    extension = 'png' if product.image.startswith('beefy-') else 'jpg'
+    extension = 'webp' if product.image.startswith('beefy-') else 'jpg'
     return f'/images/{quote(product.image, safe="")}.{extension}'
 
 
@@ -316,7 +316,7 @@ def _menu_context(request):
     if category:
         products = products.filter(category_id=category)
     context.update(products=[_decorate_product(product) for product in products],
-                   categories=Category.objects.all(), q=query, category_filter=category)
+                   categories=catalogue_categories(), q=query, category_filter=category)
     return context
 
 
@@ -340,7 +340,7 @@ def product_add(request):
     if request.method == 'POST' and form.is_valid():
         with transaction.atomic():
             product = form.save()
-        messages.success(request, f'Plat « {product.name} » ajouté.')
+        messages.success(request, f'Produit « {product.name} » ajouté.')
         return redirect('crm:menu')
     return _product_form_response(request, form, None, '', True)
 
@@ -355,7 +355,7 @@ def product_edit(request, pk):
             form = ProductForm(request.POST, request.FILES, instance=product)
             if form.is_valid():
                 form.save()
-                messages.success(request, f'Plat « {product.name} » enregistré.')
+                messages.success(request, f'Produit « {product.name} » enregistré.')
                 return redirect('crm:menu')
     else:
         product = get_object_or_404(_products(), pk=pk)
@@ -373,7 +373,7 @@ def product_availability(request, pk):
     with transaction.atomic():
         product = get_object_or_404(_products().select_for_update(), pk=pk)
         if not revision_matches(form.cleaned_data['revision'], product, product_fingerprint(product), 'stc.crm.product'):
-            messages.error(request, 'Ce plat a changé ailleurs. Vérifiez son état avant de réessayer.')
+            messages.error(request, 'Ce produit a changé ailleurs. Vérifiez son état avant de réessayer.')
             return render(request, 'shop/crm/menu.html', _menu_context(request), status=409)
         product.available = form.cleaned_data['available']
         product.save(update_fields=['available'])
@@ -503,7 +503,7 @@ def closure_add(request):
             with transaction.atomic():
                 # A closure cannot create a partial restaurant configuration.
                 if not Restaurant.objects.filter(pk=instance.pk).exists():
-                    form.add_error(None, 'Enregistrez d’abord les coordonnées du restaurant.')
+                    form.add_error(None, 'Enregistrez d’abord les coordonnées de la boucherie.')
                 else:
                     form.save()
                     messages.success(request, 'La fermeture exceptionnelle est enregistrée.')

@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "typecheck": "tsc --noEmit",
-    "test:e2e": "playwright test",
+    "test:e2e": "python3 scripts/e2e.py",
     "test:e2e:isolated": "python3 scripts/e2e.py",
     "dev:all": "python3 scripts/dev.py",
     "lint": "eslint . --max-warnings 0",

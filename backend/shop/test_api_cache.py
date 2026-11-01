@@ -171,7 +171,7 @@ class PrivateAPICacheTests(TestCase):
         response = self.client.post('/api/auth/delete-account/',
             {'password': 'Cache-Only-9x!Strong'}, format='json')
         self.assert_private_json(response, 400)
-        message = 'Ce compte ne peut pas être supprimé. Contactez le restaurant.'
+        message = 'Ce compte ne peut pas être supprimé. Contactez la boucherie.'
         self.assertEqual(response.json(), {'detail': message, 'errors': [message]})
         self.assertEqual(get_user_model().objects.filter(pk=self.customer.pk).values().get(), before['user'])
         self.assertEqual(list(Address.objects.filter(user=self.customer).values()), before['addresses'])

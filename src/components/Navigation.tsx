@@ -1,4 +1,4 @@
-import {Menu,ShoppingCart,Home,Search,User,Heart,X,Bell,MapPin,ChevronDown} from 'lucide-react';
+import {Menu,ShoppingCart,Home,Search,User,Heart,X,Bell,MapPin} from 'lucide-react';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import type {RestaurantSettings} from '../types';
 import {BeefyLogo} from './BeefyLogo';
@@ -94,7 +94,7 @@ export function Header({count,onNavigate,view,settings}:{count:number;onNavigate
             </button>
           ))}
         </nav>
-        <div className="header-right"><span className="header-location"><MapPin size={18}/>{settings?.city||'Votre boucherie'}<ChevronDown size={16}/></span>
+        <div className="header-right"><span className="header-location"><MapPin size={18}/>{settings?.city||'Votre boucherie'}</span>
           <button className="icon-button notification-button" aria-label="Voir le suivi des commandes" onClick={()=>navigate('Commandes')}><Bell size={23}/></button>
           <span className={`open-status ${settings&&(!settings.isOpen||!settings.orderingEnabled)?'closed':''}`}><i/>{settings?settings.isOpen&&settings.orderingEnabled?'Commandes ouvertes':'Commandes fermées':'Connexion…'}</span>
           <button className="icon-button favorite-header" aria-label="Mes favoris" onClick={()=>navigate('Favoris')}><Heart size={20}/></button>

@@ -11,7 +11,8 @@ function CutIcon({kind}:{kind:'steak'|'stew'|'mince'|'organs'}) {
  };
  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[kind]}</svg>;
 }
+const cutKinds:Record<string,'steak'|'stew'|'mince'|'organs'>={Steaks:'steak','À mijoter':'stew',Haché:'mince',Abats:'organs'};
 interface CategoryListProps {categories:{name:Category;image:string}[];category:Category;setCategory:(category:Category)=>void;}
 export function CategoryList({categories,category,setCategory}:CategoryListProps){
- return <div className="categories category-strip" role="group" aria-label="Catégories">{categories.map((item,i)=><button type="button" className={`category${category===item.name?' active':''}`} aria-pressed={category===item.name} key={item.name} onClick={()=>setCategory(item.name)}><span className="category-image">{i===0?<BeefyMark/>:<CutIcon kind={i===1?'steak':i===2?'stew':i===3?'mince':'organs'}/>}</span><span className="category-label">{item.name}</span></button>)}</div>;
+ return <div className="categories category-strip" role="group" aria-label="Catégories">{categories.map((item,i)=><button type="button" className={`category${category===item.name?' active':''}`} aria-pressed={category===item.name} key={item.name} onClick={()=>setCategory(item.name)}><span className="category-image">{i===0?<BeefyMark/>:<CutIcon kind={cutKinds[item.name]??'steak'}/>}</span><span className="category-label">{item.name}</span></button>)}</div>;
 }

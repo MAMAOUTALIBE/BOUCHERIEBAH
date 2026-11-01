@@ -359,7 +359,7 @@ class AccountDeletionTests(Base):
         self.client.put('/api/favorites/',{'productIds':[1]},format='json')
         order_id = self.order().data['id']
         wrong = self.client.post('/api/auth/delete-account/',{'password':'mauvais'},format='json')
-        self.assertEqual((wrong.status_code,wrong.data['detail']),(400,'Mot de passe : Mot de passe incorrect.'))
+        self.assertEqual((wrong.status_code,wrong.data['detail']),(400,'Mot de passe incorrect.'))
         response = self.client.post('/api/auth/delete-account/',{'password':self.password},format='json')
         self.assertEqual(response.status_code,200,response.data)
         self.assertFalse(get_user_model().objects.filter(pk=user.pk).exists())

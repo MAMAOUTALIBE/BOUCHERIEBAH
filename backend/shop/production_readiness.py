@@ -39,13 +39,13 @@ def database_status():
 def content_status():
     restaurant = Restaurant.objects.filter(pk=1).first()  # Never get_or_create here.
     present = bool(restaurant and all(str(value).strip() for value in (restaurant.name, restaurant.address, restaurant.city)))
-    results = [check_item('restaurant', present, 'Identité et adresse renseignées.', 'Identité et adresse du restaurant à renseigner.')]
+    results = [check_item('restaurant', present, 'Identité et adresse renseignées.', 'Identité et adresse de la boucherie à renseigner.')]
     service = bool(restaurant and (restaurant.pickup_enabled or (restaurant.delivery_enabled and restaurant.delivery_postal_codes)))
     results.append(check_item('services', service, 'Au moins un service configuré.', 'Configurer le retrait ou une zone de livraison.'))
     hours = bool(restaurant and restaurant.opening_hours.exists())
     results.append(check_item('hours', hours, 'Créneaux horaires présents.', 'Horaires réels à renseigner.'))
     products = Product.objects.filter(available=True).exists()
-    results.append(check_item('catalogue', products, 'Des plats disponibles sont présents.', 'Aucun plat disponible.'))
+    results.append(check_item('catalogue', products, 'Des produits disponibles sont présents.', 'Aucun produit disponible.'))
     results.append(check_item('content_approved', settings.STC_CONTENT_APPROVED,
                               'Validation des contenus déclarée par le responsable.',
                               'Le client doit valider identité, carte, photos, prix, allergènes, horaires, zones et documents ; STC_CONTENT_APPROVED=0.'))

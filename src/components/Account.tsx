@@ -11,7 +11,7 @@ export type AccountEntryMode='login'|'register';
 export interface PasswordResetFeedback {kind:'success'|'error';message:string}
 type AuthMode=AccountEntryMode|'reset'|'confirm';
 const blankAddress:Omit<Address,'id'>={label:'Maison',name:'',phone:'',address:'',postal:'',city:''};
-export function Account({session,onNavigate,favoriteCount,onDeleted,initialMode='login',initialCustomer,returnToCheckout=false,onAuthenticated,onContinue,resetFeedback,onPasswordReset}:{session:SessionState;onNavigate:(v:View)=>void;favoriteCount:number;onDeleted:(message:string)=>void;initialMode?:AccountEntryMode;initialCustomer?:{name:string;email:string};returnToCheckout?:boolean;onAuthenticated?:(mode:AccountEntryMode)=>void;onContinue?:()=>void;resetFeedback?:PasswordResetFeedback|null;onPasswordReset:(feedback:PasswordResetFeedback)=>void}){
+export function Account({session,onNavigate,favoriteCount,onDeleted,onSignedOut,initialMode='login',initialCustomer,returnToCheckout=false,onAuthenticated,onContinue,resetFeedback,onPasswordReset}:{session:SessionState;onNavigate:(v:View)=>void;favoriteCount:number;onDeleted:(message:string)=>void;onSignedOut?:()=>void;initialMode?:AccountEntryMode;initialCustomer?:{name:string;email:string};returnToCheckout?:boolean;onAuthenticated?:(mode:AccountEntryMode)=>void;onContinue?:()=>void;resetFeedback?:PasswordResetFeedback|null;onPasswordReset:(feedback:PasswordResetFeedback)=>void}){
   const resetParams=new URLSearchParams(window.location.search);
   const [mode,setMode]=useState<AuthMode>(resetParams.has('reset_uid')&&resetParams.has('reset_token')?'confirm':initialMode);
   const [busy,setBusy]=useState(false);
@@ -90,7 +90,7 @@ export function Account({session,onNavigate,favoriteCount,onDeleted,initialMode=
       <div className="account-card"><div className="account-heading"><span className="account-avatar"><Flame size={32}/></span><div><h2>Bonjour, {user.name} !</h2><p className="muted">{user.email}</p></div></div>
         <button className="account-link" onClick={()=>onNavigate('Favoris')}><Heart/>Mes favoris <span>{favoriteCount}<ArrowRight size={17}/></span></button>
         <button className="account-link" onClick={()=>onNavigate('Commandes')}><PackageCheck/>Mes commandes <span><ArrowRight size={17}/></span></button>
-        <button className="account-link" disabled={busy||session.loading} onClick={async()=>{setBusy(true);setError('');try{await session.logout();setMode('login');setAddresses([]);setEditing(undefined);setSuccess('Vous êtes déconnecté.');}catch(err){setError(messageOf(err));}finally{setBusy(false);}}}><LogOut/>Se déconnecter</button>
+        <button className="account-link" disabled={busy||session.loading} onClick={async()=>{setBusy(true);setError('');try{await session.logout();setMode('login');setAddresses([]);setEditing(undefined);setSuccess('Vous êtes déconnecté.');onSignedOut?.();}catch(err){setError(messageOf(err));}finally{setBusy(false);}}}><LogOut/>Se déconnecter</button>
       </div>
       <div className="account-card profile-card"><div className="account-section-heading"><h2><UserRound size={20}/> Mes informations</h2></div>
         <p className="muted">Vos coordonnées seront proposées pour vos prochaines commandes.</p>

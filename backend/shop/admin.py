@@ -58,7 +58,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable=['available','position']
     search_fields=['name']
     filter_horizontal=['option_groups']
-    fieldsets=(('Recette',{'fields':('name','category','description','summary','price','image','photo','badge','rating','vegetarian','allergens','available','position','option_groups'),'description':'Allergènes : liste JSON, par exemple ["gluten", "lait", "œufs"]. Note : laisser vide si elle ne provient pas d’avis vérifiés.'}),('Promotion',{'fields':('promotional','promotion_source','discount_percent','promotion_starts','promotion_ends')}))
+    fieldsets=(('Produit',{'fields':('name','category','description','summary','price','image','photo','badge','rating','vegetarian','allergens','available','position','option_groups'),'description':'Allergènes : liste JSON, par exemple ["gluten", "lait", "œufs"]. Note : laisser vide si elle ne provient pas d’avis vérifiés.'}),('Promotion',{'fields':('promotional','promotion_source','discount_percent','promotion_starts','promotion_ends')}))
 
 class OrderLineInline(admin.TabularInline):
     model=OrderLine
@@ -159,7 +159,7 @@ class OrderAdmin(admin.ModelAdmin):
                 except ValidationError as error:
                     self.message_user(request,f'{order.id} : {" ".join(error.messages)}',messages.WARNING)
         self.message_user(request,f'{count} commande(s) mise(s) à jour.')
-    @admin.action(description='Passer en cuisine')
+    @admin.action(description='Passer en préparation')
     def prepare(self,request,queryset):
         self.transition_orders(request,queryset,'preparing')
     @admin.action(description='Marquer prêtes')

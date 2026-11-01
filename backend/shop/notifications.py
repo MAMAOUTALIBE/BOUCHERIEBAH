@@ -15,7 +15,7 @@ def order_summary(order):
     rows = []
     for line in order.lines.all():
         detail = f' ({", ".join(line.choices)})' if line.choices else ''
-        rows.append(f'- {line.quantity} × {line.name}{detail} : {euro(line.total)}')
+        rows.append(f'- {line.name}{detail} · {line.quantity} kg : {euro(line.total)}')
     if order.delivery_fee:
         rows.append(f'- Livraison : {euro(order.delivery_fee)}')
     rows.append(f'Total TTC : {euro(order.total)}')
@@ -39,12 +39,12 @@ def order_confirmed(order_id):
     if order.mode == 'Livraison':
         where = f"Livraison à : {customer.get('address','')}, {customer.get('postal','')} {customer.get('city','')}"
     else:
-        where = f'Retrait au restaurant : {restaurant.address}, {restaurant.city}' if restaurant else 'Retrait au restaurant'
+        where = f'Retrait à la boucherie : {restaurant.address}, {restaurant.city}' if restaurant else 'Retrait à la boucherie'
     if order.payment_method == 'on_site':
         payment = f'{order.payment_label}. Le règlement est effectué auprès de l’équipe ; aucun prélèvement en ligne.'
     else:
         payment = 'Paiement simulé : aucun prélèvement.' if order.payment_status == 'simulated' else 'Paiement confirmé par carte (Stripe, mode test).'
-    demo = 'Commande de démonstration : aucun repas ne sera préparé.\n\n' if order.demo_mode else ''
+    demo = 'Commande de démonstration : aucune commande ne sera préparée.\n\n' if order.demo_mode else ''
     send(f'{name} — Commande {order.id} confirmée',
          f"Bonjour {customer.get('name','')},\n\nNous avons bien reçu votre commande {order.id}.\n\n{demo}{order_summary(order)}\n\n{where}\n{payment}\n\n"
          f"Suivre votre commande : {tracking_url(order)}\nCe lien est personnel : ne le partagez pas.\n\n{name}",
