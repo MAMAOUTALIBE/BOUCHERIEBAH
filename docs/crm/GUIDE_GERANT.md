@@ -1,0 +1,94 @@
+# STC — guide du gérant
+
+## Ouvrir votre espace
+
+
+L’instance en ligne est une **démonstration** : les changements sont enregistrés, mais aucun repas ni paiement réel n’est déclenché.
+
+| Rubrique | À quoi elle sert |
+|---|---|
+| **Accueil** | Voir les commandes à préparer, en cuisine ou prêtes, puis ouvrir celles qui demandent votre attention. |
+| **Commandes** | Chercher une commande, consulter son contenu et faire avancer sa préparation. |
+| **Ma carte** | Ajouter ou modifier un plat, son prix, sa photo et sa disponibilité. |
+| **Mon restaurant** | Changer les coordonnées, les horaires et les réglages des commandes en ligne ; consulter les clients selon vos droits. |
+
+## Ajouter ou modifier un plat
+
+1. Ouvrez **Ma carte**, puis **Ajouter un plat** ou **Modifier** sur le plat concerné.
+2. Remplissez le nom, la catégorie, le prix et la description. Vous pouvez écrire un prix avec une virgule, par exemple `11,90`.
+3. Pour changer la photo, choisissez un fichier JPEG, PNG ou WebP de 5 Mo maximum. L’aperçu sert à vérifier votre choix : la photo n’est pas encore publiée.
+4. Si nécessaire, ouvrez **Plus de détails** pour les options, les allergènes et les préférences.
+5. Cliquez sur **Enregistrer le plat** et attendez la confirmation.
+
+Le bouton **Voir mon site** ouvre le site client dans un autre onglet. Une page client déjà ouverte actualise la carte automatiquement, généralement au prochain cycle de 15 secondes lorsqu’elle est visible.
+
+## Signaler un plat épuisé
+
+Dans **Ma carte**, cliquez sur sa disponibilité pour le passer d’un état disponible à **Épuisé**, ou le remettre disponible. Attendez la fin de l’enregistrement.
+
+Un plat épuisé reste visible sur le site, mais ne peut plus être commandé. Si le message **Options épuisées** apparaît, une option obligatoire manque : le plat ne redeviendra commandable qu’une fois ses choix disponibles rétablis.
+
+## Préparer une commande
+
+1. Ouvrez **Commandes** et repérez la référence, les plats et le mode de retrait ou de livraison.
+2. Ouvrez **Détails et suivi** pour les précisions du client et l’historique.
+3. Cliquez successivement sur **Préparer**, **Marquer prête**, puis **Terminer**, au moment correspondant.
+
+La liste se met à jour automatiquement. Le bouton **Actualiser** permet aussi de demander les dernières informations. Une commande Stripe en attente de paiement ne peut pas partir en préparation. Si une action est refusée, lisez le message avant de recommencer ; le statut n’a pas été modifié par ce refus. Votre recherche et votre page restent conservées après une action.
+
+## Suivre un règlement sur place
+
+Lorsque le restaurant utilise le règlement sur place, la commande arrive **Confirmée**, avec la mention **À régler au restaurant** ou **À régler à la livraison**. Vous pouvez la préparer et la marquer prête avant le règlement.
+
+1. Recevez le règlement physique selon les moyens acceptés par le restaurant.
+2. Cliquez sur **Enregistrer l’encaissement**, puis confirmez. Le montant est celui de la commande ; le logiciel conserve qui a enregistré l’opération et à quelle date.
+3. Cliquez sur **Terminer** après l’encaissement. Si ce bouton n’est pas encore disponible, vérifiez le règlement.
+
+Ces actions demandent un droit dédié. Si vous préparez les commandes sans ce droit, demandez au responsable d’enregistrer le règlement.
+
+Pour un remboursement complet, rendez d’abord la somme au client avec le moyen adapté, puis utilisez **Confirmer le remboursement**. Une commande encore en cours est alors annulée ; une commande déjà terminée conserve son historique. Le logiciel ne débite ni ne rembourse automatiquement une carte et ne remplace pas la caisse du restaurant. Répéter la confirmation ne crée pas un second règlement.
+
+## Régler les horaires ou mettre les commandes en pause
+
+Dans **Mon restaurant** :
+
+- Modifiez les coordonnées ou les réglages utiles, puis cliquez sur **Enregistrer les changements**.
+- Pour interrompre les nouvelles commandes, désactivez la prise des commandes en ligne et enregistrez. Cette pause ne modifie pas votre planning habituel.
+- Dans **Horaires**, choisissez le jour et les heures. **Ajouter un créneau** permet de séparer le midi et le soir. Une fermeture plus tôt que l’ouverture correspond au lendemain ; une journée sans créneau est fermée.
+- Pour un congé ou une date particulière, utilisez **Fermetures exceptionnelles**, puis **Ajouter la fermeture**. Cette action possède son propre bouton d’enregistrement.
+
+En démonstration, les horaires sont conservés, mais la prise de commandes reste accessible tant qu’elle n’est pas mise en pause manuellement.
+
+## Retrouver un client
+
+Dans **Mon restaurant → Clients**, recherchez son nom, son e-mail ou son téléphone, puis ouvrez sa fiche. Pour un téléphone, les espaces et les séparateurs usuels ne gênent pas la recherche. Vous y trouvez ses coordonnées et les commandes passées avec son compte. Un lien vers sa fiche apparaît aussi dans les détails de ses commandes.
+
+Le **Montant réglé sur place** comprend uniquement les commandes réelles encaissées, non annulées et non remboursées. Les montants de démonstration sont présentés séparément. Les coordonnées d’une commande ne remplacent pas automatiquement celles du compte ; la provenance d’un téléphone repris d’une commande est indiquée.
+
+Les commandes sans compte restent dans **Commandes**. Elles ne sont pas rattachées à une fiche par simple correspondance d’e-mail ou de téléphone. Les comptes du personnel ne figurent pas dans la liste des clients.
+
+La consultation demande les deux droits **Consulter les clients** (`shop.view_customer`) et **consultation des commandes** (`shop.view_order`), avec un compte de personnel actif. Votre responsable les attribue explicitement ; les comptes existants ne reçoivent pas ces droits automatiquement. La fiche client est en lecture seule.
+
+## Aider un client à créer son compte
+
+Sur le site, **Compte → Créer un compte** demande son nom, son e-mail et un mot de passe d’au moins dix caractères. Dans le panier, **Me connecter** ou **Créer un compte** permet de retrouver sa commande après la connexion. **Continuer ma commande sans compte** reste possible.
+
+Le client peut enregistrer son nom et son téléphone dans **Mes informations** pour gagner du temps lors de ses prochaines commandes. Son e-mail de connexion reste en lecture seule.
+
+Sans service d’envoi d’e-mails configuré, la récupération du mot de passe affiche son indisponibilité. Ne promettez pas l’envoi d’un lien tant que la configuration et la réception réelle n’ont pas été vérifiées.
+
+## Si un enregistrement ne passe pas
+
+**Des champs sont signalés** : corrigez-les, puis utilisez à nouveau le bouton d’enregistrement. Un prix, une photo ou un horaire refusé ne remplace pas les informations déjà enregistrées.
+
+**« Votre demande n’a pas été enregistrée »** : la sécurité du formulaire n’a pas pu être vérifiée. Cliquez sur **Actualiser le formulaire**, ou sur le bouton de retour proposé. Rouvrez ensuite la fiche et recommencez la saisie : le brouillon refusé n’est pas récupéré. La demande refusée n’est pas rejouée automatiquement. Si nécessaire, utilisez **Revenir à la connexion**.
+
+**La fiche a changé entre-temps** : rouvrez les informations actuelles avant de refaire votre modification. Cela évite d’effacer le travail d’une autre personne.
+
+**La mise à jour est interrompue** : les dernières données consultées restent affichées. Utilisez **Actualiser** ou rechargez la page avant de vous fier à un ancien statut.
+
+Si un bouton ou un formulaire est en lecture seule, votre compte ne dispose peut-être pas du droit correspondant. Demandez à votre responsable plutôt que de créer un autre compte.
+
+## Fermer votre session
+
+Utilisez **Se déconnecter**. Sur mobile, cette action est dans le bouton du compte du gérant, en haut de l’écran.

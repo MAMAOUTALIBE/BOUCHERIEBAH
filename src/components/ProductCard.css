@@ -1,0 +1,396 @@
+/* One photo, one clear content column: the same horizontal shape at every size. */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 20px;
+  width: 100%;
+  min-width: 0;
+}
+
+.product-grid .skeleton {
+  height: 210px;
+  border-radius: 24px;
+}
+
+.product-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 42% minmax(0, 1fr);
+  width: 100%;
+  min-width: 0;
+  min-height: 210px;
+  overflow: hidden;
+  background: #fffaf4;
+  border: 1px solid #ecddca;
+  border-radius: 24px;
+  box-shadow: 0 5px 16px #5c36120a;
+  transition: box-shadow .2s, transform .2s;
+}
+
+.card-media {
+  position: relative;
+  align-self: stretch;
+  min-width: 0;
+  margin: 6px 0 6px 6px;
+  padding: 0;
+  overflow: hidden;
+  background: #f7e8d6;
+  border-radius: 19px;
+}
+
+.card-media .food-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform .35s;
+}
+
+.card-media:focus-visible {
+  outline-offset: -4px;
+}
+
+/* Keeping the heart over the photo gives the dish name its full column. */
+.card-favorite {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  color: #664e6b;
+  background: #fffaf4f2;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px #28122a0d;
+  transition: color .2s, background .2s;
+}
+
+.card-favorite.is-favorite {
+  color: var(--violet);
+  background: #f1e4f7;
+  border-color: #e6c9f0;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  padding: 22px 20px 18px;
+}
+
+.card-badge {
+  max-width: 100%;
+  margin-bottom: 10px;
+  padding: 5px 9px;
+  color: var(--violet);
+  background: #efe1f5;
+  border-radius: 6px;
+  font-size: 9px;
+  line-height: 1.3;
+  font-weight: 800;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.card-badge--vegetarian,
+.card-badge-spacer {
+  display: none;
+}
+
+.card-title {
+  align-self: stretch;
+  color: #26112f;
+  font-size: 23px;
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -.65px;
+  overflow-wrap: anywhere;
+}
+
+.card-title button {
+  display: block;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+
+.card-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 8px;
+  color: #736579;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.card-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card-options li {
+  padding: 4px 8px;
+  color: #673584;
+  background: #f0e4f5;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 17px;
+}
+
+.card-price {
+  color: #24112c;
+  font-family: Outfit, sans-serif;
+  font-size: 25px;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -.8px;
+  white-space: nowrap;
+}
+
+.card-add {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  background: var(--orange);
+  border: 1px solid #ffad48;
+  border-radius: 50%;
+  color: #fff;
+  box-shadow: 0 4px 10px #ff981f24;
+  transition: background .2s, transform .15s;
+}
+
+.card-choose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 7px;
+  min-height: 44px;
+  padding: 0 17px;
+  color: #fff;
+  background: var(--violet);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background .2s, transform .15s;
+}
+
+/* Formula: pale lavender frame, complete meal image, selectable options. */
+.formula-card {
+  border-color: #d6b6e5;
+  box-shadow: 0 5px 16px #48146508;
+}
+
+.formula-card .card-media {
+  background: #f8eddf;
+}
+
+.formula-card .card-media .food-image {
+  object-fit: contain;
+}
+
+/* The catalogue's best-sellers get the immersive violet treatment. */
+.specialty-card {
+  background: linear-gradient(125deg, #622380, #3b104f);
+  border-color: #63277d;
+  box-shadow: 0 6px 18px #48146519;
+}
+
+.specialty-card .card-media {
+  margin: 0;
+  border-radius: 0 19px 19px 0;
+}
+
+.specialty-card .card-title {
+  color: #fffaf4;
+}
+
+.specialty-card .card-text {
+  color: #f0dfef;
+}
+
+.specialty-card .card-badge {
+  background: #ff981f;
+  color: #381045;
+}
+
+.specialty-card .card-price {
+  color: #ffab40;
+}
+
+.unavailable .card-media .food-image {
+  filter: saturate(.3);
+}
+
+.unavailable .card-add,
+.unavailable .card-choose {
+  background: #9b918b;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.card-add:active,
+.card-choose:active {
+  transform: scale(.95);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .product-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px #48146516; }
+  .card-media:hover .food-image { transform: scale(1.04); }
+  .card-favorite:hover { color: var(--violet); background: #fff; }
+  .card-add:hover { background: #ec820a; }
+  .card-choose:hover { background: #652285; }
+}
+
+@media (max-width: 1100px) {
+  .product-grid { gap: 16px; }
+  .card-body { padding: 18px 16px 16px; }
+  .card-title { font-size: 21px; }
+}
+
+@media (max-width: 900px) {
+  .product-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Scale the accepted mobile shape with the actual card width through tablets.
+   The width-derived minimum preserves its proportions without a preferred
+   aspect-ratio constraining longer copy or larger text. */
+@media (max-width: 1024px) {
+  .product-grid {
+    container-type: inline-size;
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: 1fr;
+    gap: 10px;
+  }
+  .product-grid .skeleton {
+    height: auto;
+    min-height: max(148px, calc(100cqi / 2.35));
+    aspect-ratio: 2.35;
+    border-radius: clamp(16px, 4.52cqi, 30px);
+  }
+  .product-card {
+    grid-template-columns: 50% minmax(0, 1fr);
+    min-height: max(148px, calc(100cqi / 2.35));
+    border-radius: clamp(16px, 4.52cqi, 30px);
+  }
+  .card-media { margin: 4px 0 4px 4px; border-radius: clamp(12px, 3.39cqi, 25px); }
+  .card-body { padding: clamp(1px, calc(.8cqi - 1.8px), 6px) clamp(7px, 1.98cqi, 20px); }
+  .card-body > * { flex-shrink: 0; }
+  .card-badge {
+    margin-bottom: 0;
+    padding: 0 clamp(6px, 1.7cqi, 12px);
+    font-size: clamp(.5rem, 2.25cqi, 1rem);
+    letter-spacing: .4px;
+  }
+  .card-title { font-size: clamp(.875rem, 3.96cqi, 2rem); line-height: 1.15; letter-spacing: -.3px; }
+  .card-text { margin-top: 0; font-size: clamp(.6875rem, 3.1cqi, 1.5rem); line-height: 1.25; }
+  .card-options { margin-top: 0; gap: clamp(3px, .85cqi, 7px); }
+  .card-options li {
+    padding: clamp(1px, .28cqi, 3px) clamp(4px, 1.13cqi, 8px);
+    font-size: clamp(.5625rem, 2.54cqi, 1.25rem);
+    line-height: 1.3;
+  }
+  .card-footer { gap: clamp(3px, .85cqi, 7px); padding-top: 0; }
+  .card-price { font-size: clamp(1.125rem, 5.08cqi, 2.375rem); }
+  .card-add { width: clamp(44px, 12.43cqi, 64px); height: clamp(44px, 12.43cqi, 64px); }
+  .card-add svg { width: clamp(21px, 5.93cqi, 30px); height: clamp(21px, 5.93cqi, 30px); }
+  .card-choose {
+    gap: clamp(4px, 1.13cqi, 7px);
+    min-height: clamp(44px, 12.43cqi, 64px);
+    padding: 0 clamp(12px, 3.39cqi, 22px);
+    font-size: clamp(.75rem, 3.39cqi, 1.25rem);
+  }
+  .card-favorite {
+    top: clamp(7px, 1.98cqi, 16px);
+    left: clamp(7px, 1.98cqi, 16px);
+    width: clamp(44px, 12.43cqi, 64px);
+    height: clamp(44px, 12.43cqi, 64px);
+  }
+  .card-favorite svg { width: clamp(17px, 4.8cqi, 26px); height: clamp(17px, 4.8cqi, 26px); }
+  .specialty-card .card-media { margin: 4px 0 4px 4px; border-radius: clamp(12px, 3.39cqi, 25px); }
+
+  /* The main food categories share the menu frame, photo fit and title alignment. */
+  .menu-style-card:not(.specialty-card) { border-color: #d6b6e5; box-shadow: 0 5px 16px #48146508; }
+  .menu-style-card .card-media { background: #f8eddf; }
+  .menu-style-card .card-media .food-image { object-fit: contain; }
+  .menu-style-card .card-badge--vegetarian { display: inline-block; }
+  .menu-style-card .card-badge-spacer {
+    display: block;
+    min-height: calc(clamp(.5rem, 2.25cqi, 1rem) * 1.3);
+    flex-shrink: 0;
+  }
+
+  /* Frame the food inside the known portraits instead of their empty backgrounds. */
+  .menu-style-card .card-media--portrait .food-image {
+    inset: auto;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: auto;
+    transform: translate(-50%, -47.5%);
+  }
+
+  /* Keep the original featured dish on the same responsive frame. */
+  .large-image-card {
+    grid-template-columns: 50% minmax(0, 1fr);
+    box-shadow: 0 6px 16px rgba(72, 20, 101, .16);
+  }
+  .large-image-card .card-media .food-image { object-fit: contain; }
+  .large-image-card .card-badge { margin-bottom: 0; }
+  .large-image-card .card-footer { padding-top: 0; }
+}
+
+@media (max-width: 360px) {
+  .card-body { padding: 1px 6px; }
+  .card-choose { padding: 0 10px; }
+  .card-choose svg { display: none; }
+}
+
+/* The catalogue keeps its mobile gutter at the tablet breakpoint too: a wider
+   viewport must not briefly produce a narrower card at 761px. */
+@media (min-width: 761px) and (max-width: 1024px) {
+  main:has(.catalog-section) { padding-inline: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-card,
+  .card-media .food-image,
+  .card-favorite,
+  .card-add,
+  .card-choose { transition: none; }
+  .card-add:active,
+  .card-choose:active { transform: none; }
+}
