@@ -12,6 +12,7 @@ from PIL import Image
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
+from .testing.legacy_catalogue import seed_legacy_catalogue
 from django.core.management import call_command
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.exceptions import ValidationError
@@ -62,7 +63,7 @@ class CRMTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        call_command('seed_demo', verbosity=0)
+        seed_legacy_catalogue()
         users = get_user_model()
         cls.manager = users.objects.create_superuser('crm-manager@example.com', 'CRM-Test-9x!Strong')
         cls.customer = users.objects.create_user('crm-client@example.com', 'CRM-Test-9x!Strong')

@@ -51,7 +51,7 @@ class User(AbstractUser):
         return self.email
 
 class Restaurant(models.Model):
-    name = models.CharField(max_length=80, default='STC')
+    name = models.CharField(max_length=80, default='Beefy')
     address = models.CharField(max_length=200, default='24 rue des Gourmands')
     city = models.CharField(max_length=100, default='Paris, 11e')
     delivery_fee = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal('3.90'), validators=[MinValueValidator(0)])
@@ -157,6 +157,7 @@ class Product(models.Model):
     rating = models.CharField(max_length=5, blank=True, default='')
     vegetarian = models.BooleanField(default=False)
     available = models.BooleanField(default=True)
+    archived = models.BooleanField(default=False)
     allergens = models.JSONField(default=list)
     option_groups = models.ManyToManyField(OptionGroup, blank=True)
     promotional = models.BooleanField(default=False)
@@ -180,7 +181,7 @@ class Product(models.Model):
             raise ValidationError({'allergens': 'Saisissez une liste JSON de noms, par exemple ["gluten", "lait"].'})
     def is_available(self):
         now = timezone.now()
-        return self.available and (not self.promotion_starts or now >= self.promotion_starts) and (not self.promotion_ends or now < self.promotion_ends) and (not self.promotion_source_id or self.promotion_source.available)
+        return not self.archived and self.available and (not self.promotion_starts or now >= self.promotion_starts) and (not self.promotion_ends or now < self.promotion_ends) and (not self.promotion_source_id or (not self.promotion_source.archived and self.promotion_source.available))
     def current_price(self):
         price = self.promotion_source.price if self.promotion_source_id else self.price
         return (price * (Decimal(100)-self.discount_percent)/100).quantize(Decimal('.01'), rounding=ROUND_HALF_UP)

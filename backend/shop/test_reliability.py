@@ -13,6 +13,7 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
+from .testing.legacy_catalogue import seed_legacy_catalogue
 from django.core.management import call_command
 from django.db import connection
 from django.test import RequestFactory, TestCase, override_settings
@@ -38,7 +39,7 @@ def session_event(event_id, order, event_type='checkout.session.completed', sess
 class Base(TestCase):
     @classmethod
     def setUpTestData(cls):
-        call_command('seed_demo',verbosity=0)
+        seed_legacy_catalogue()
     def setUp(self):
         cache.clear()
         self.client = APIClient(enforce_csrf_checks=True)

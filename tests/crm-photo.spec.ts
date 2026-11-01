@@ -5,7 +5,7 @@ const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwM
 const savedPhoto = `data:image/png;base64,${png}#saved`;
 const refusal = 'Choisissez une photo JPEG, PNG ou WebP de 5 Mo maximum.';
 const readError = 'La photo ne peut pas être lue. Choisissez un autre fichier.';
-const selected = 'Nouvelle photo sélectionnée. Enregistrez le plat pour la publier.';
+const selected = 'Nouvelle photo sélectionnée. Enregistrez le produit pour la publier.';
 
 declare global {
   interface Window {

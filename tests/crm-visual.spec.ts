@@ -1,3 +1,4 @@
+import {availableProductId} from './support/catalog';
 import {expect, test, type Locator, type Page, type TestInfo} from '@playwright/test';
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
@@ -19,9 +20,9 @@ async function login(page: Page) {
 }
 
 async function geometry(page: Page, active: string) {
-  const nav = page.getByRole('navigation', {name: 'Gestion du restaurant', exact: true});
+  const nav = page.getByRole('navigation', {name: 'Gestion de la boucherie', exact: true});
   await expect(nav.getByRole('link')).toHaveCount(4);
-  for (const label of ['Accueil', 'Commandes', 'Ma carte', 'Mon restaurant']) {
+  for (const label of ['Accueil', 'Commandes', 'Mon catalogue', 'Ma boucherie']) {
     const link = nav.getByRole('link', {name: label, exact: true});
     await expect(link).toBeVisible();
     await link.click({trial: true});
@@ -46,10 +47,10 @@ async function capture(page: Page, info: TestInfo, name: string) {
 }
 
 const pages = [
-  {path: '/crm/', active: 'Accueil', heading: 'Bonjour, chef.', slug: 'accueil'},
+  {path: '/crm/', active: 'Accueil', heading: 'Bonjour, bienvenue.', slug: 'accueil'},
   {path: '/crm/commandes/?status=all', active: 'Commandes', heading: 'Commandes', slug: 'commandes'},
-  {path: '/crm/carte/', active: 'Ma carte', heading: 'Ma carte', slug: 'carte'},
-  {path: '/crm/restaurant/', active: 'Mon restaurant', heading: 'Mon restaurant', slug: 'restaurant'},
+  {path: '/crm/carte/', active: 'Mon catalogue', heading: 'Mon catalogue', slug: 'carte'},
+  {path: '/crm/restaurant/', active: 'Ma boucherie', heading: 'Ma boucherie', slug: 'restaurant'},
 ];
 
 test('CRM visuel : quatre rubriques et fiche plat utilisables sur les écrans de recette', async ({page}, info) => {
@@ -74,7 +75,7 @@ test('CRM visuel : quatre rubriques et fiche plat utilisables sur les écrans de
       await page.evaluate(() => document.fonts.ready);
       await geometry(page, screen.active);
       if (screen.slug === 'carte') {
-        await reachable(page.locator('main').getByRole('link', {name: 'Ajouter un plat', exact: true}));
+        await reachable(page.locator('main').getByRole('link', {name: 'Ajouter un produit', exact: true}));
         await reachable(page.locator('[data-product-id]').first().getByRole('switch'));
         await reachable(page.locator('[data-product-id]').first().getByRole('link', {name: /^Modifier /}));
       } else if (screen.slug === 'restaurant') {
@@ -88,10 +89,10 @@ test('CRM visuel : quatre rubriques et fiche plat utilisables sur les écrans de
       await capture(page, info, screen.slug);
     }
 
-    const editResponse = await page.goto('/crm/carte/6/modifier/');
+    const editResponse = await page.goto(`/crm/carte/${await availableProductId(page.request)}/modifier/`);
     expect(editResponse?.status()).toBe(200);
-    await expect(page.getByRole('heading', {name: 'Modifier le plat', exact: true})).toBeVisible();
-    await geometry(page, 'Ma carte');
+    await expect(page.getByRole('heading', {name: 'Modifier le produit', exact: true})).toBeVisible();
+    await geometry(page, 'Mon catalogue');
     await reachable(page.locator('[name="name"]'));
     await reachable(page.locator('[name="price"]'));
     await page.evaluate(() => scrollTo(0, 0));
@@ -101,7 +102,7 @@ test('CRM visuel : quatre rubriques et fiche plat utilisables sur les écrans de
     await expect(photo).toBeVisible();
     await expect.poll(() => photo.evaluate(el => (el as HTMLImageElement).complete && (el as HTMLImageElement).naturalWidth > 0)).toBe(true);
     await capture(page, info, 'plat-photo');
-    await reachable(page.getByRole('button', {name: 'Enregistrer le plat', exact: true}));
+    await reachable(page.getByRole('button', {name: 'Enregistrer le produit', exact: true}));
     await capture(page, info, 'plat-bas');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }

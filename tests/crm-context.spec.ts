@@ -1,3 +1,4 @@
+import {availableProductId} from './support/catalog';
 import {expect, test, type Page} from '@playwright/test';
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
@@ -32,7 +33,7 @@ test('CRM : recherche et page persistent après une action puis un conflit réel
       headers: {'X-CSRFToken': csrf, 'Idempotency-Key': randomUUID()},
       data: {
         mode: 'À emporter', paymentMethod: 'simulation',
-        items: [{productId: 6, quantity: 1, choices: []}],
+        items: [{productId: await availableProductId(page.request), quantity: 1, choices: []}],
         customer: {name: index === 31 ? 'Bob hors recherche' : query, email: 'recette@example.com', phone: '0612345678'},
       },
     });

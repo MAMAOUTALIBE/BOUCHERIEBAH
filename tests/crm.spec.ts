@@ -1,3 +1,4 @@
+import {availableProductId} from './support/catalog';
 import {expect, test, type BrowserContext, type Page} from '@playwright/test';
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
@@ -42,18 +43,18 @@ async function removeTestProduct(page: Page, id: number) {
 test('CRM : carte, photo, prix et disponibilité persistent et se synchronisent avec un site ouvert', async ({page, browser}) => {
   test.setTimeout(100_000);
   await login(page);
-  const nav = page.getByRole('navigation', {name: 'Gestion du restaurant', exact: true});
+  const nav = page.getByRole('navigation', {name: 'Gestion de la boucherie', exact: true});
   await expect(nav.getByRole('link')).toHaveCount(4);
-  for (const name of ['Accueil', 'Commandes', 'Ma carte', 'Mon restaurant']) {
+  for (const name of ['Accueil', 'Commandes', 'Mon catalogue', 'Ma boucherie']) {
     await expect(nav.getByRole('link', {name, exact: true})).toBeVisible();
   }
-  await nav.getByRole('link', {name: 'Ma carte', exact: true}).click();
-  await expect(nav.getByRole('link', {name: 'Ma carte', exact: true})).toHaveAttribute('aria-current', 'page');
+  await nav.getByRole('link', {name: 'Mon catalogue', exact: true}).click();
+  await expect(nav.getByRole('link', {name: 'Mon catalogue', exact: true})).toHaveAttribute('aria-current', 'page');
 
   const viewport = page.viewportSize()!;
   await page.setViewportSize({width: 320, height: 800});
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await expect(nav.getByRole('link', {name: 'Mon restaurant', exact: true})).toBeVisible();
+  await expect(nav.getByRole('link', {name: 'Ma boucherie', exact: true})).toBeVisible();
   await page.setViewportSize(viewport);
 
   const name = `Recette QA ${randomUUID().slice(0, 8)}`;
@@ -62,23 +63,23 @@ test('CRM : carte, photo, prix et disponibilité persistent et se synchronisent 
   let id: number | undefined;
   try {
     await publicPage.goto('/');
-    await publicPage.getByRole('textbox', {name: 'Rechercher un plat', exact: true}).fill(name);
-    await expect(publicPage.getByText('Aucun plat pour cette recherche.', {exact: true})).toBeVisible();
+    await publicPage.getByRole('textbox', {name: 'Rechercher une viande', exact: true}).fill(name);
+    await expect(publicPage.getByText('Aucune pièce pour cette recherche.', {exact: true})).toBeVisible();
 
     await page.bringToFront();
-    await page.getByRole('link', {name: 'Ajouter un plat', exact: true}).first().click();
+    await page.getByRole('link', {name: 'Ajouter un produit', exact: true}).first().click();
     await page.locator('[name="name"]').fill(name);
-    await page.locator('[name="category"]').selectOption({label: 'Burgers'});
+    await page.locator('[name="category"]').selectOption({label: 'Steaks'});
     await page.locator('[name="price"]').fill('-2');
     await page.locator('[name="description"]').fill('Recette de validation préparée sur place.');
-    await page.getByRole('button', {name: 'Enregistrer le plat', exact: true}).click();
-    await expect(page.getByRole('alert')).toContainText('Le plat n’a pas été enregistré.');
+    await page.getByRole('button', {name: 'Enregistrer le produit', exact: true}).click();
+    await expect(page.getByRole('alert')).toContainText('Le produit n’a pas été enregistré.');
     await expect(page.locator('[name="name"]')).toHaveValue(name);
     await page.locator('[name="price"]').fill('12,50');
     await page.locator('[name="available"]').check();
     await page.locator('[name="photo"]').setInputFiles(join(process.cwd(), 'public/images/burger.jpg'));
     await expect(page.locator('[data-photo-preview] img')).toBeVisible();
-    await page.getByRole('button', {name: 'Enregistrer le plat', exact: true}).click();
+    await page.getByRole('button', {name: 'Enregistrer le produit', exact: true}).click();
     await expect(page).toHaveURL(/\/crm\/carte\/$/);
     const productsResponse = await page.request.get('/api/products/');
     const products = await productsResponse.json() as {id: number; name: string; image: string}[];
@@ -95,14 +96,14 @@ test('CRM : carte, photo, prix et disponibilité persistent et se synchronisent 
     await expect(publicCard).toBeVisible({timeout: 22_000});
     await expect(publicCard).toContainText('12,50');
     await expect(publicCard.locator('img')).toHaveAttribute('src', /\/media\/products\/.+\.jpg/);
-    await expect(publicPage.getByRole('textbox', {name: 'Rechercher un plat', exact: true})).toHaveValue(name);
+    await expect(publicPage.getByRole('textbox', {name: 'Rechercher une viande', exact: true})).toHaveValue(name);
 
     await page.bringToFront();
     await row.getByRole('link', {name: `Modifier ${name}`, exact: true}).click();
     const renamed = `${name} modifiée`;
     await page.locator('[name="name"]').fill(renamed);
     await page.locator('[name="price"]').fill('13,40');
-    await page.getByRole('button', {name: 'Enregistrer le plat', exact: true}).click();
+    await page.getByRole('button', {name: 'Enregistrer le produit', exact: true}).click();
     await expect(row).toContainText('13,40');
     await publicPage.bringToFront();
     await expect(publicCard).toContainText('13,40', {timeout: 22_000});
@@ -131,7 +132,7 @@ test('CRM : une commande client suit les étapes métier avec le même total et 
     await guest.request.get('/api/auth/csrf/');
     const response = await guest.request.post('/api/orders/', {
       headers: {'X-CSRFToken': await csrf(guest), 'Idempotency-Key': randomUUID()},
-      data: {mode: 'À emporter', items: [{productId: 6, quantity: 1, choices: []}], customer: {name: 'Camille CRM', email: 'camille-crm@example.com', phone: '0612345678'}, paymentMethod: 'simulation'},
+      data: {mode: 'À emporter', items: [{productId: await availableProductId(page.request), quantity: 1, choices: []}], customer: {name: 'Camille CRM', email: 'camille-crm@example.com', phone: '0612345678'}, paymentMethod: 'simulation'},
     });
     expect(response.status()).toBe(201);
     const order = await response.json() as {id: string; accessToken: string; total: number};

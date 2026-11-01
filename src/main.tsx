@@ -10,3 +10,5 @@ import './button-effects.css';
 import './desktop.css';
 
 import './beefy.css';
+
+import './beefy-details.css';

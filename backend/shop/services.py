@@ -51,7 +51,7 @@ def restaurant_data():
     return {'name':restaurant.name,'address':restaurant.address,'city':restaurant.city,'hours':hours,'days':days,'deliveryFee':float(restaurant.delivery_fee),'minDeliveryTotal':float(restaurant.min_delivery_total),'deliveryPostalCodes':restaurant.delivery_postal_codes,'orderingEnabled':restaurant.ordering_enabled,'isOpen':bool(settings.DEMO_MODE or restaurant.is_open()),'demoMode':settings.DEMO_MODE,'paymentMode':settings.PAYMENT_MODE,'openingHours':[{'weekday':p.weekday,'opens':p.opens.strftime('%H:%M'),'closes':p.closes.strftime('%H:%M')} for p in periods],'pickupEnabled':restaurant.pickup_enabled,'deliveryEnabled':restaurant.delivery_enabled and bool(restaurant.delivery_postal_codes),'pickupDelay':restaurant.pickup_delay,'deliveryDelay':restaurant.delivery_delay,**public_details()}
 
 def categories_data():
-    return [{'name':c.name,'position':c.position} for c in Category.objects.all()]
+    return [{'name':c.name,'position':c.position} for c in Category.objects.filter(Q(products__archived=False) | Q(products__isnull=True)).distinct()]
 
 def product_data(product, request=None):
     image = request.build_absolute_uri(product.photo.url) if product.photo and request else product.photo.url if product.photo else product.image

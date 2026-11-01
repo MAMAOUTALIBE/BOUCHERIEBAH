@@ -23,7 +23,7 @@ function readCart():CartItem[]{
 export const cartKey=(id:number,choices:string[])=>`${id}:${[...choices].sort().join('|')}`;
 export function checkedItem(item:CartItem,products:Product[]):CartItem{
   const p=products.find(product=>product.id===item.product.id);
-  if(!p)return {...item,issue:'Ce plat n’est plus à la carte. Supprimez-le pour continuer.'};
+  if(!p)return {...item,issue:'Ce produit n’est plus à la carte. Supprimez-le pour continuer.'};
   const groups=p.optionGroups||[];
   const all=groups.flatMap(g=>g.choices);
   let selected=[...item.choices];
@@ -33,7 +33,7 @@ export function checkedItem(item:CartItem,products:Product[]):CartItem{
     selected=[...new Set([...required,...optional].map(c=>c.id))];
   }
   const validChoices=selected.every(id=>all.some(c=>c.id===id))&&new Set(selected).size===selected.length&&groups.every(g=>{const n=g.choices.filter(c=>selected.includes(c.id)).length;return n>=g.min&&n<=g.max;});
-  const issue=p.available===false?'Ce plat est temporairement indisponible.':!validChoices?'Les options ont changé. Personnalisez à nouveau ce plat.':undefined;
+  const issue=p.available===false?'Ce produit est temporairement indisponible.':!validChoices?'Les options ont changé. Personnalisez à nouveau ce produit.':undefined;
   const price=(cents(p.price)+all.filter(c=>selected.includes(c.id)).reduce((sum,c)=>sum+cents(c.price),0))/100;
   return {...item,product:p,choices:selected,choiceNames:all.filter(c=>selected.includes(c.id)).map(c=>c.name),unitPrice:price,issue,option:undefined,extras:undefined};
 }
@@ -45,7 +45,7 @@ export function useCart(){
     setItems(old=>{
       let changed=false;
       const updated=old.map(item=>{const next=checkedItem(item,products);if(item.unitPrice!==next.unitPrice||next.issue)changed=true;return next;});
-      if(changed)setNotice('Votre panier a été actualisé selon la carte du restaurant. Vérifiez les prix et les options.');
+      if(changed)setNotice('Votre panier a été actualisé selon la carte de la boucherie. Vérifiez les prix et les options.');
       return updated;
     });
   },[]);

@@ -42,7 +42,7 @@ async function request<T>(path:string,options:RequestInit={}):Promise<T>{
     const response=await fetch(`/api${path}`,{...options,headers,credentials:'include',cache:'no-store',signal:controller.signal});
     const contentType=response.headers.get('content-type')||'';
     const data:unknown=response.status===204?undefined:contentType.includes('application/json')?await response.json():undefined;
-    if(!response.ok)throw new ApiError(data?errorMessage(data):response.status===503?'Le service est temporairement indisponible. Réessayez dans un instant.':'La connexion au restaurant a échoué. Réessayez.',response.status,data);
+    if(!response.ok)throw new ApiError(data?errorMessage(data):response.status===503?'Le service est temporairement indisponible. Réessayez dans un instant.':'La connexion à la boucherie a échoué. Réessayez.',response.status,data);
     if(response.status!==204&&!contentType.includes('application/json'))throw new ApiError('Le service de commande est indisponible. Veuillez réessayer.',502);
     return data as T;
   }catch(error){

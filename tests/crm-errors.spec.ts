@@ -1,3 +1,4 @@
+import {availableProductId} from './support/catalog';
 import {expect, test, type Page, type TestInfo} from '@playwright/test';
 import {readFileSync, writeFileSync} from 'node:fs';
 import {join} from 'node:path';
@@ -95,17 +96,17 @@ test('CRM : une connexion avec un jeton expiré propose une reprise GET puis une
   await expect(page.locator('[name="username"]')).toHaveValue('');
   expect(await page.locator('[name="csrfmiddlewaretoken"]').inputValue()).not.toBe(invalidToken);
   await signIn(page);
-  await expect(page.getByRole('navigation', {name: 'Gestion du restaurant', exact: true})).toBeVisible();
+  await expect(page.getByRole('navigation', {name: 'Gestion de la boucherie', exact: true})).toBeVisible();
   await assertObservedErrors(info, observed);
 });
 
 test('CRM : une modification avec un jeton expiré reste sans effet et rouvre la fiche enregistrée', async ({page}, info) => {
-  const path = '/crm/carte/6/modifier/';
+  const path = `/crm/carte/${await availableProductId(page.request)}/modifier/`;
   const observed = observeErrors(page, path);
   await page.goto('/crm/connexion/');
   await signIn(page);
   const before = await (await page.request.get('/api/products/')).json() as {id: number; name: string}[];
-  const product = before.find(row => row.id === 6);
+  const product = before.find(row => path.includes(`/carte/${row.id}/`));
   expect(product).toBeDefined();
   await page.goto(path);
   const privateDraft = `Brouillon refusé ${randomUUID()}`;
@@ -113,7 +114,7 @@ test('CRM : une modification avec un jeton expiré reste sans effet et rouvre la
   await page.locator('[name="price"]').fill('99,99');
   const invalidToken = await corruptToken(page, '.crm-product-form');
   const rejected = page.waitForResponse(response => new URL(response.url()).pathname === path && response.request().method() === 'POST');
-  await page.getByRole('button', {name: 'Enregistrer le plat', exact: true}).click();
+  await page.getByRole('button', {name: 'Enregistrer le produit', exact: true}).click();
   const response = await rejected;
   expect(response.status()).toBe(403);
   expect(response.headers()['content-type']).toContain('text/html');
@@ -125,10 +126,10 @@ test('CRM : une modification avec un jeton expiré reste sans effet et rouvre la
   const resume = page.getByRole('link', {name: 'Actualiser le formulaire', exact: true});
   await expect(resume).toHaveAttribute('href', path);
   await resume.click();
-  await expect(page).toHaveURL(/\/crm\/carte\/6\/modifier\/$/);
+  await expect(page).toHaveURL(url => url.pathname === path);
   await expect(page.locator('[name="name"]')).toHaveValue(product!.name);
   await expect(page.locator('[name="name"]')).toBeEditable();
-  await expect(page.getByRole('button', {name: 'Enregistrer le plat', exact: true})).toBeEnabled();
+  await expect(page.getByRole('button', {name: 'Enregistrer le produit', exact: true})).toBeEnabled();
   expect(await page.locator('.crm-product-form').evaluate(form => (form as HTMLFormElement).checkValidity())).toBe(true);
   expect(await page.locator('.crm-product-form [name="csrfmiddlewaretoken"]').inputValue()).not.toBe(invalidToken);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

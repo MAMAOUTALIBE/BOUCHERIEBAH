@@ -222,7 +222,7 @@ class CRMCustomerTests(TestCase):
         self.grant(self.staff, 'view_customer', 'view_order')
         response = self.client.get(self.url())
         self.assertContains(response, f'href="{self.url()}" aria-current="page"')
-        self.assertContains(response, 'aria-label="Rubriques de Mon restaurant"')
+        self.assertContains(response, 'aria-label="Rubriques de Ma boucherie"')
         self.assertNotContains(response, '>Réglages</a>')
         self.grant(self.staff, 'view_restaurant', 'view_order')
         response = self.client.get(self.url('restaurant'))

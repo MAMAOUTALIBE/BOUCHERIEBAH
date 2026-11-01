@@ -1,3 +1,4 @@
+import {availableProductId} from './support/catalog';
 import {expect, test, type BrowserContext, type Page} from '@playwright/test';
 import {randomUUID} from 'node:crypto';
 import {readFileSync} from 'node:fs';
@@ -49,14 +50,14 @@ test('Clients : profil et commandes rattachés au compte, invités séparés, fi
     const paymentMethod = process.env.STC_PAYMENT_MODE === 'on_site' ? 'on_site' : 'simulation';
     const orderResponse = await accountContext.request.post('/api/orders/', {
       headers: {'X-CSRFToken': await csrf(accountContext), 'Idempotency-Key': randomUUID()},
-      data: {mode: 'À emporter', items: [{productId: 6, quantity: 1, choices: []}], customer: {name, email, phone: '0699999999'}, paymentMethod},
+      data: {mode: 'À emporter', items: [{productId: await availableProductId(page.request), quantity: 1, choices: []}], customer: {name, email, phone: '0699999999'}, paymentMethod},
     });
     expect(orderResponse.status()).toBe(201);
     const order = await orderResponse.json() as {id: string};
     await guestContext.request.get('/api/auth/csrf/');
     const guestResponse = await guestContext.request.post('/api/orders/', {
       headers: {'X-CSRFToken': await csrf(guestContext), 'Idempotency-Key': randomUUID()},
-      data: {mode: 'À emporter', items: [{productId: 6, quantity: 1, choices: []}], customer: {name: 'Contact invité', email, phone: '0612345678'}, paymentMethod},
+      data: {mode: 'À emporter', items: [{productId: await availableProductId(page.request), quantity: 1, choices: []}], customer: {name: 'Contact invité', email, phone: '0612345678'}, paymentMethod},
     });
     expect(guestResponse.status()).toBe(201);
     const guestOrder = await guestResponse.json() as {id: string};
@@ -64,10 +65,10 @@ test('Clients : profil et commandes rattachés au compte, invités séparés, fi
     expect((await accountContext.request.get(`/crm/restaurant/clients/${user.id}/`)).status()).toBe(403);
 
     await loginManager(page);
-    const nav = page.getByRole('navigation', {name: 'Gestion du restaurant', exact: true});
+    const nav = page.getByRole('navigation', {name: 'Gestion de la boucherie', exact: true});
     await expect(nav.getByRole('link')).toHaveCount(4);
-    await nav.getByRole('link', {name: 'Mon restaurant', exact: true}).click();
-    await page.getByRole('navigation', {name: 'Rubriques de Mon restaurant'}).getByRole('link', {name: 'Clients', exact: true}).click();
+    await nav.getByRole('link', {name: 'Ma boucherie', exact: true}).click();
+    await page.getByRole('navigation', {name: 'Rubriques de Ma boucherie'}).getByRole('link', {name: 'Clients', exact: true}).click();
     const search = page.getByRole('textbox', {name: 'Nom, e-mail ou téléphone du client', exact: true});
     await search.fill(email);
     await page.getByRole('button', {name: 'Rechercher', exact: true}).click();
@@ -97,7 +98,7 @@ test('Clients : profil et commandes rattachés au compte, invités séparés, fi
       await page.setViewportSize({width, height: 844});
       await page.evaluate(() => document.fonts.ready);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      await expect(nav.getByRole('link', {name: 'Mon restaurant', exact: true})).toHaveAttribute('aria-current', 'page');
+      await expect(nav.getByRole('link', {name: 'Ma boucherie', exact: true})).toHaveAttribute('aria-current', 'page');
       await page.screenshot({path: info.outputPath(`fiche-client-${width}.png`), fullPage: true});
     }
     await page.getByRole('link', {name: 'Retour aux clients', exact: true}).click();

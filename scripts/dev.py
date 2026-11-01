@@ -33,7 +33,7 @@ def main():
     try:
         children.append(subprocess.Popen([str(python), 'backend/manage.py', 'runserver', '127.0.0.1:8000', '--noreload'], cwd=ROOT, start_new_session=True))
         children.append(subprocess.Popen(['npm', 'run', 'dev'], cwd=ROOT, start_new_session=True))
-        print('STC : http://localhost:5173 · Administration : http://localhost:5173/admin/', flush=True)
+        print('Beefy : http://localhost:5173 · Administration : http://localhost:5173/admin/', flush=True)
         while all(child.poll() is None for child in children):
             time.sleep(0.5)
         if any(child.returncode for child in children if child.poll() is not None):

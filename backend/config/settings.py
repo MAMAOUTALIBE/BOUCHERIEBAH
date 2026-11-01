@@ -81,7 +81,7 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', '1') == '1'
 EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', '0') == '1'
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'STC <bonjour@stc.example>')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Beefy <bonjour@beefy.example>')
 EMAIL_TIMEOUT = int(os.getenv('EMAIL_TIMEOUT', '10'))
 # Team addresses alerted of each confirmed order (comma separated); empty disables the alert.
 ORDER_NOTIFICATION_EMAILS = [address.strip() for address in os.getenv('STC_ORDER_NOTIFICATION_EMAIL', '').split(',') if address.strip()]

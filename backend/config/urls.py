@@ -4,9 +4,9 @@ from django.contrib import admin
 from django.urls import include,path
 from shop import views
 from shop.payments import PaymentView,stripe_webhook
-admin.site.site_header='STC · Administration'
-admin.site.site_title='STC'
-admin.site.index_title='Votre restaurant'
+admin.site.site_header='Beefy · Administration'
+admin.site.site_title='Beefy'
+admin.site.index_title='Votre boucherie'
 urlpatterns=[
     path('crm/',include('shop.crm_urls')),
     path('admin/',admin.site.urls),

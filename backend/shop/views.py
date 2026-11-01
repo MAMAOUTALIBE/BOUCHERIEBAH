@@ -96,7 +96,7 @@ class CsrfView(PrivateAPIView):
 
 class ProductsView(APIView):
     def get(self,request):
-        products = Product.objects.select_related('category','promotion_source').prefetch_related('option_groups__choices')
+        products = Product.objects.filter(archived=False).select_related('category','promotion_source').prefetch_related('option_groups__choices')
         return Response([product_data(p,request) for p in products])
 
 class CategoriesView(APIView):

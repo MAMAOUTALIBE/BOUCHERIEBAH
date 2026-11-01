@@ -114,10 +114,10 @@ class PhotoUploadField(forms.ImageField):
 
 class ProductForm(AliasedModelErrorsMixin, forms.ModelForm):
     model_error_aliases = {'allergens': 'allergens_text'}
-    price = forms.DecimalField(label='Prix (€)', max_digits=7, decimal_places=2,
+    price = forms.DecimalField(label='Prix (€ / kg)', max_digits=7, decimal_places=2,
                                min_value=0, localize=True,
                                widget=forms.TextInput(attrs={'inputmode': 'decimal', 'placeholder': '11,90'}))
-    photo = PhotoUploadField(label='Photo du plat', required=False,
+    photo = PhotoUploadField(label='Photo du produit', required=False,
                              widget=forms.FileInput(attrs={'accept': 'image/jpeg,image/png,image/webp'}))
     allergens_text = forms.CharField(label='Allergènes', required=False, max_length=2000,
                                      help_text='Séparez les noms par des virgules, par exemple : gluten, lait.')
@@ -128,7 +128,7 @@ class ProductForm(AliasedModelErrorsMixin, forms.ModelForm):
         fields = ('name', 'category', 'price', 'description', 'photo', 'available',
                   'summary', 'badge', 'vegetarian', 'option_groups')
         labels = {
-            'name': 'Nom du plat', 'category': 'Catégorie', 'description': 'Description',
+            'name': 'Nom du produit', 'category': 'Catégorie', 'description': 'Description',
             'available': 'Disponible à la commande', 'summary': 'Description courte',
             'badge': 'Petit badge', 'vegetarian': 'Végétarien', 'option_groups': 'Choix proposés au client',
         }
@@ -148,7 +148,7 @@ class ProductForm(AliasedModelErrorsMixin, forms.ModelForm):
     def clean_name(self):
         value = self.cleaned_data['name'].strip()
         if not value:
-            raise forms.ValidationError('Donnez un nom à ce plat.')
+            raise forms.ValidationError('Donnez un nom à ce produit.')
         return value
 
     def clean_description(self):
@@ -166,7 +166,7 @@ class ProductForm(AliasedModelErrorsMixin, forms.ModelForm):
     def clean_revision(self):
         value = self.cleaned_data.get('revision', '')
         if self.instance.pk and not revision_matches(value, self.instance, self._original_fingerprint, 'stc.crm.product'):
-            raise forms.ValidationError('Ce plat a changé depuis son ouverture. Rechargez sa fiche avant de réessayer.')
+            raise forms.ValidationError('Ce produit a changé depuis son ouverture. Rechargez sa fiche avant de réessayer.')
         return value
 
     def clean_photo(self):
@@ -232,7 +232,7 @@ class RestaurantForm(AliasedModelErrorsMixin, forms.ModelForm):
         model = Restaurant
         fields = ('name', 'address', 'city', 'ordering_enabled', 'pickup_enabled', 'delivery_enabled',
                   'pickup_delay', 'delivery_delay', 'delivery_fee', 'min_delivery_total')
-        labels = {'name': 'Nom du restaurant', 'address': 'Adresse', 'city': 'Ville',
+        labels = {'name': 'Nom de la boucherie', 'address': 'Adresse', 'city': 'Ville',
                   'ordering_enabled': 'Accepter les commandes en ligne', 'pickup_enabled': 'À emporter',
                   'delivery_enabled': 'Livraison', 'pickup_delay': 'Délai à emporter', 'delivery_delay': 'Délai de livraison'}
 

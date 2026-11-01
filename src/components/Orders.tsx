@@ -9,7 +9,7 @@ function paymentLabel(order:Order){
     if(order.paymentStatus==='paid')return 'Réglé sur place';
     if(order.paymentStatus==='refunded')return 'Remboursé sur place';
     if(order.paymentStatus==='cancelled')return 'Règlement annulé';
-    return order.mode==='Livraison'?'À régler à la livraison':'À régler au restaurant';
+    return order.mode==='Livraison'?'À régler à la livraison':'À régler à la boucherie';
   }
   return order.paymentStatus==='simulated'?'Paiement simulé · Aucun prélèvement':order.paymentStatus==='paid'?'Paiement confirmé':order.paymentStatus==='refunded'?'Paiement remboursé':order.paymentStatus==='failed'?'Le paiement a échoué':order.paymentStatus==='cancelled'?'Paiement annulé':'Paiement en attente';
 }
@@ -54,7 +54,7 @@ export function Orders({user,references,paymentReturn,onBrowse,onPaid}:{user:Use
     try{const result=await restaurantApi.createPayment(order.id,order.accessToken||references.find(r=>r.id===order.id)?.accessToken);redirectToPayment(result.url);}catch(err){setActionError(messageOf(err));if(err instanceof ApiError&&err.status===409)void refresh(true);}finally{setBusy(null);}
   }
   const returned=paymentReturn;
-  return <section className="subpage orders-page"><span className="small-label">ON S’OCCUPE DE TOUT</span><div className="page-title-row"><h1>Mes commandes</h1><button className="text-button" disabled={loading} onClick={()=>void refresh()}><RefreshCw size={15}/>Actualiser</button></div><p className="muted">{user?'Vos commandes et leur suivi, mis à jour par le restaurant.':'Retrouvez les commandes invitées passées sur cet appareil.'}</p>
+  return <section className="subpage orders-page"><span className="small-label">ON S’OCCUPE DE TOUT</span><div className="page-title-row"><h1>Mes commandes</h1><button className="text-button" disabled={loading} onClick={()=>void refresh()}><RefreshCw size={15}/>Actualiser</button></div><p className="muted">{user?'Vos commandes et leur suivi, mis à jour par la boucherie.':'Retrouvez les commandes invitées passées sur cet appareil.'}</p>
     {returned&&<p className="notice" role="status">{(returned==='cancel'||returned==='cancelled')?'Le paiement a été interrompu. Votre panier est conservé. Vous pouvez reprendre le paiement ci-dessous.':'Le résultat du paiement est en cours de vérification auprès du serveur. Le statut ci-dessous fait foi.'}</p>}
     {loading&&<p className="panel-loading" role="status">Chargement de vos commandes…</p>}
     {error&&<div className="notice error" role="alert">{error}<button className="text-button" onClick={()=>void refresh()}>Réessayer</button></div>}
@@ -72,7 +72,7 @@ export function Orders({user,references,paymentReturn,onBrowse,onPaid}:{user:Use
         <p className="payment-note">{paymentLabel(order)}</p>
         {order.paymentMethod!=='on_site'&&(order.paymentStatus==='pending'||order.paymentStatus==='failed')&&order.status!=='cancelled'&&<button className="primary" disabled={busy===order.id} onClick={()=>void pay(order)}><CreditCard size={16}/>{busy===order.id?'Connexion au paiement…':'Reprendre le paiement test'}</button>}
         {order.history.length>0&&<details className="order-events"><summary>Historique du suivi</summary><ol>{order.history.map((event,index)=><li key={index}><span>{statusLabels[event.status]||event.status}</span><time dateTime={event.date}>{new Intl.DateTimeFormat('fr-FR',{dateStyle:'short',timeStyle:'short'}).format(new Date(event.date))}</time></li>)}</ol></details>}
-        {order.demoMode&&<span className="demo-pill">Démonstration · Commande enregistrée, aucun repas préparé</span>}
+        {order.demoMode&&<span className="demo-pill">Démonstration · Commande enregistrée, aucun colis préparé</span>}
       </article>;
     })}
   </section>;

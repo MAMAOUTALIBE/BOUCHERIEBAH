@@ -113,7 +113,7 @@ def logout_view(request):
 
 
 def _products():
-    return Product.objects.filter(promotional=False).select_related('category').prefetch_related('option_groups__choices')
+    return Product.objects.filter(promotional=False,archived=False).select_related('category').prefetch_related('option_groups__choices')
 
 
 def _image_url(product):
@@ -121,7 +121,8 @@ def _image_url(product):
         return product.photo.url
     if product.image.startswith(('https://', 'http://', '/')):
         return product.image
-    return f'/images/{quote(product.image, safe="")}.jpg'
+    extension = 'png' if product.image.startswith('beefy-') else 'jpg'
+    return f'/images/{quote(product.image, safe="")}.{extension}'
 
 
 def _decorate_product(product):

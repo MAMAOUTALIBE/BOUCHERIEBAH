@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {Plus,Minus,ShoppingBag,Check} from 'lucide-react';
+import {Plus,Minus,ShoppingBag,Check,Leaf,Package,ChefHat} from 'lucide-react';
 import type {Product,CartItem} from '../types';
 import {cents,euro} from '../types';
 import {cartKey} from '../store/useCart';
@@ -24,8 +24,8 @@ export function ProductDetails({product:p,onClose,onAdd}:{product:Product;onClos
   }
   return <Modal title={p.name} onClose={onClose}>
     <FoodImage className="detail-image" image={p.image} alt={p.name}/>
-    <div className="detail-body"><span className="small-label">PRÉPARÉ À LA COMMANDE</span><h2>{p.name}</h2><p className="muted">{p.description}</p>
-      {!available&&<p className="error" role="status">Ce plat est temporairement indisponible.</p>}
+    <div className="detail-body beefy-detail"><span className="detail-badge">{p.badge||'La sélection Beefy'}</span><h2>{p.name}</h2><p className="detail-unit-price">{euro(p.price)} <small>/ kg</small></p><p className="muted">{p.description}</p><div className="detail-benefits"><span><Leaf size={23}/>Découpe soignée</span><span><Package size={23}/>Portion de 1 kg</span><span><ChefHat size={23}/>Prêt à cuisiner</span></div>
+      {!available&&<p className="error" role="status">Ce produit est temporairement indisponible.</p>}
       <form onSubmit={e=>{e.preventDefault();const currentChoices=selected.map(choice=>choice.id).sort();setChoices(currentChoices);const errors=groups.filter(g=>{const count=g.choices.filter(c=>currentChoices.includes(c.id)).length;return count<g.min||count>g.max;}).map(g=>g.id);setInvalid(errors);if(errors.length||!available)return;onAdd({key:cartKey(p.id,currentChoices),product:p,quantity,choices:currentChoices,choiceNames:selected.map(c=>c.name),unitPrice:unit});onClose();}}>
         {groups.map(group=>{
           const checkedCount=group.choices.filter(c=>choices.includes(c.id)).length;
@@ -39,8 +39,8 @@ export function ProductDetails({product:p,onClose,onAdd}:{product:Product;onClos
             {invalid.includes(group.id)&&<p id={`error-${group.id}`} className="error" role="alert">{group.min===1?'Sélectionnez une option pour continuer.':`Sélectionnez entre ${group.min} et ${group.max} options.`}</p>}
           </fieldset>;
         })}
-        <div className="detail-actions"><div className="quantity"><button type="button" aria-label="Réduire la quantité" disabled={quantity===1} onClick={()=>setQuantity(quantity-1)}><Minus size={16}/></button><span>{quantity}</span><button type="button" aria-label="Augmenter la quantité" disabled={quantity>=20} onClick={()=>setQuantity(quantity+1)}><Plus size={16}/></button></div><button className="primary" disabled={!available} type="submit"><ShoppingBag size={17}/>Ajouter · {euro(unit*quantity)}</button></div>
-        <p className="detail-note"><Check size={13}/> {Array.isArray(p.allergens)&&p.allergens.length?`Allergènes : ${p.allergens.join(', ')}.`:'Pour toute allergie, contactez le restaurant avant de commander.'}</p>
+        <div className="detail-actions"><div className="quantity"><button type="button" aria-label="Réduire la quantité" disabled={quantity===1} onClick={()=>setQuantity(quantity-1)}><Minus size={16}/></button><span>{quantity} kg</span><button type="button" aria-label="Augmenter la quantité" disabled={quantity>=20} onClick={()=>setQuantity(quantity+1)}><Plus size={16}/></button></div><button className="primary" disabled={!available} type="submit"><ShoppingBag size={17}/>Ajouter · {euro(unit*quantity)}</button></div>
+        <p className="detail-note"><Check size={13}/> {Array.isArray(p.allergens)&&p.allergens.length?`Allergènes : ${p.allergens.join(', ')}.`:'Pour toute allergie, contactez la boucherie avant de commander.'}</p>
       </form>
     </div>
   </Modal>;

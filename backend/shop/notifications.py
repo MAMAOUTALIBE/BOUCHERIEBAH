@@ -34,7 +34,7 @@ def order_confirmed(order_id):
     """Customer confirmation and restaurant alert, sent once the order is confirmed (created or paid)."""
     order = Order.objects.prefetch_related('lines').get(pk=order_id)
     restaurant = Restaurant.objects.filter(pk=1).first()
-    name = restaurant.name if restaurant else 'STC'
+    name = restaurant.name if restaurant else 'Beefy'
     customer = order.customer
     if order.mode == 'Livraison':
         where = f"Livraison à : {customer.get('address','')}, {customer.get('postal','')} {customer.get('city','')}"

@@ -1,8 +1,8 @@
-# Boucherie
+# Beefy — boucherie en ligne
 
-Base React/TypeScript et API Django pour le futur site de boucherie.
-Le dossier et le paquet npm portent le nom `boucherie`.
-Le catalogue et les écrans métier hérités du restaurant restent à adapter.
+Site de boucherie React/TypeScript et API Django pour Beefy.
+Le dossier reste `boucherie` ; le paquet npm porte le nom `beefy`.
+Catalogue Beefy : entrecôte, faux-filet, bœuf haché, morceaux à mijoter et abats. Les prix sont indiqués au kilogramme et chaque article correspond à une portion de 1 kg. Les visuels sont illustratifs ; les prix et les coordonnées de démonstration sont à confirmer avant toute publication.
 
 ## Démarrage local
 
@@ -38,7 +38,14 @@ python3 -m unittest discover -s tests -p 'test_operations.py' -v
 
 ## Nouveau départ
 
-Les métadonnées de l’ancien dépôt Git ont été supprimées. Aucun nouveau dépôt n’a encore été initialisé.
+Le projet est versionné dans le dépôt Git `MAMAOUTALIBE/BOUCHERIEBAH`, sur la branche `main`.
 Les configurations et procédures de l’ancien hébergement ont été retirées.
 Le prochain déploiement sera configuré avec les informations du nouveau serveur.
 Les variables internes `STC_*` sont conservées pour assurer la compatibilité du code existant.
+
+## Adapter une ancienne base locale
+
+Après les migrations, exécuter `backend/.venv/bin/python backend/manage.py adapt_beefy`.
+Cette commande réservée au développement SQLite crée une sauvegarde privée dans `backups/`, ajoute les produits Beefy manquants, archive les anciens articles et change le nom en Beefy. Elle conserve clients, commandes et lignes historiques. Le réensemencement `seed_demo` conserve les modifications de l’administration.
+
+Les articles archivés restent dans la base pour l’historique et ne sont plus commandables. Pour revenir en arrière, arrêter les services locaux et restaurer la sauvegarde SQLite correspondante. Aucun déploiement et aucun commit ne sont effectués par ces commandes.

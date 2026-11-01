@@ -90,10 +90,10 @@
         activeReader = null;
         const image = document.createElement('img');
         image.src = reader.result;
-        image.alt = 'Aperçu de la nouvelle photo du plat';
+        image.alt = 'Aperçu de la nouvelle photo du produit';
         preview.replaceChildren(image);
         preview.classList.remove('is-empty');
-        photoFeedback.textContent = 'Nouvelle photo sélectionnée. Enregistrez le plat pour la publier.';
+        photoFeedback.textContent = 'Nouvelle photo sélectionnée. Enregistrez le produit pour la publier.';
       });
       reader.addEventListener('error', readError);
       try {

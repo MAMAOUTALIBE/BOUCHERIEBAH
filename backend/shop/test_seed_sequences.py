@@ -28,7 +28,8 @@ class SeedSequenceTests(TransactionTestCase):
 
     def test_seed_then_automatic_ids_do_not_collide_for_products_or_restaurant(self):
         self.seed()
-        self.assertGreater(self.new_product().pk, 90)
+        maximum = Product.objects.order_by('-pk').first().pk
+        self.assertGreater(self.new_product().pk, maximum)
         self.assertGreater(Restaurant.objects.create(name='Périmètre de test', delivery_enabled=False).pk, 1)
 
     def test_repeated_seed_preserves_customized_recipes_and_settings(self):

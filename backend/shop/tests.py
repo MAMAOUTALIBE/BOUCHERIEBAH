@@ -11,6 +11,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core import mail
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
+from .testing.legacy_catalogue import seed_legacy_catalogue
 from django.core.management import call_command
 from django.test import TestCase,override_settings
 from django.utils import timezone
@@ -23,7 +24,7 @@ from .models import Order,OrderHistory,Product,Choice,Restaurant,Payment,StripeE
 class APITests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        call_command('seed_demo',verbosity=0)
+        seed_legacy_catalogue()
     def setUp(self):
         cache.clear()
         self.client=APIClient(enforce_csrf_checks=True)
@@ -256,7 +257,7 @@ class APITests(TestCase):
         self.assertEqual(order.payment_status,'pending')
     def test_seed_non_destructive(self):
         Product.objects.filter(pk=1).update(name='Nouveau nom',price=Decimal('12.34'),available=False)
-        call_command('seed_demo',verbosity=0)
+        seed_legacy_catalogue()
         product=Product.objects.get(pk=1)
         self.assertEqual(product.name,'Nouveau nom')
         self.assertEqual(product.price,Decimal('12.34'))
@@ -333,7 +334,7 @@ class ConcurrentGuestOrderTests(TransactionTestCase):
     reset_sequences=True
     def setUp(self):
         cache.clear()
-        call_command('seed_demo',verbosity=0)
+        seed_legacy_catalogue()
     def test_concurrent_first_guest_posts_create_one_order(self):
         bootstrap=APIClient(enforce_csrf_checks=True)
         bootstrap.get('/api/auth/csrf/')
@@ -365,7 +366,7 @@ class ConcurrentGuestOrderTests(TransactionTestCase):
 class OutOfOrderPaymentTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        call_command('seed_demo',verbosity=0)
+        seed_legacy_catalogue()
     def test_refund_before_checkout_confirmation_stays_refunded(self):
         client=APIClient(enforce_csrf_checks=True)
         client.get('/api/auth/csrf/')
